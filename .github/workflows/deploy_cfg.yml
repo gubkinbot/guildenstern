@@ -27,6 +27,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
+      # - name: Test test command.
+      #   run: echo "Test test done."
+
       - name: Run tests
         run: python3 ./gubkinbot/guildenstern/src/test.py
 
@@ -51,4 +54,4 @@ jobs:
 #           script: |
 #             cd gubkinbot/guildenster
 #             git pull
-#             python3 /src/run.py
+#             python3 ./src/run.py
