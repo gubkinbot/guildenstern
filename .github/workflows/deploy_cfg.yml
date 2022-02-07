@@ -21,6 +21,8 @@ jobs:
     
     strategy:
       fail-fast: false
+      matrix:
+        a: [0] # strange error if deleted matrix
     
     steps:
       - uses: actions/checkout@v2
@@ -29,13 +31,15 @@ jobs:
         run: echo "Test test done."
         
 #       - name: Run tests
-#         run: python3 guildenstern/tests.py
+#         run: python3 ./gubkinbot/guildenstern/src/tests.py
+
     env:
       CI: true # show terminal output!
       
   deploy:
     runs-on: ubuntu-latest
     needs: test
+    
     steps:
       - name: Test deploy command.
         run: echo "Test deploy done."
@@ -43,18 +47,11 @@ jobs:
 #       - name: Deploying...
 #         uses: appleboy/ssh-action@master
 #         with: 
-#           host: ${{ secrets. }}
-#           username: ${{ secrets. }}
-#           password: ${{ secrets. }}
+#           host: ${{ secrets.HOST }}
+#           username: ${{ secrets.USERNAME }}
+#           password: ${{ secrets.PASSWORD }}
 #           port: 22
 #           script: |
-#             cd gubkinbot
+#             cd gubkinbot/guildenster
 #             git pull
-#             python3 guildenstern/run.py
-
-        
-#       Example runs a set of commands using the runners shell
-#       - name: Run a multi-line script
-#        run: |
-#          echo Add other actions to build,
-#          echo test, and deploy your project.
+#             python3 /src/run.py
