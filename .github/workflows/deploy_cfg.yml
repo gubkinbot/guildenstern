@@ -53,8 +53,6 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: 22
           script: |
-            echo $PWD
-            pwd
-            cd guildenster
+            cd /root/gubkinbot/guildenstern
             git pull
             python3 ./src/run.py
