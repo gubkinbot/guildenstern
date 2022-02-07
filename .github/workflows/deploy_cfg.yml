@@ -27,11 +27,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
-      - name: Test test command
-        run: echo "Test test done."
-        
-#       - name: Run tests
-#         run: python3 ./gubkinbot/guildenstern/src/tests.py
+      - name: Run tests
+        run: python3 ./gubkinbot/guildenstern/src/tests.py
 
     env:
       CI: true # show terminal output!
