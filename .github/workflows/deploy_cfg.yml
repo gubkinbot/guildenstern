@@ -41,17 +41,18 @@ jobs:
     needs: test
     
     steps:
-      - name: Test deploy command.
-        run: echo "Test deploy done."
+
+      # - name: Test deploy command.
+      #   run: echo "Test deploy done."
       
-#       - name: Deploying...
-#         uses: appleboy/ssh-action@master
-#         with: 
-#           host: ${{ secrets.HOST }}
-#           username: ${{ secrets.USERNAME }}
-#           password: ${{ secrets.PASSWORD }}
-#           port: 22
-#           script: |
-#             cd gubkinbot/guildenster
-#             git pull
-#             python3 ./src/run.py
+      - name: Deploying...
+        uses: appleboy/ssh-action@master
+        with: 
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
+            cd gubkinbot/guildenster
+            git pull
+            python3 ./src/run.py
