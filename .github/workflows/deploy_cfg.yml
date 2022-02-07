@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: Run tests
-        run: python3 ./gubkinbot/guildenstern/src/tests.py
+        run: python3 ./gubkinbot/guildenstern/src/test.py
 
     env:
       CI: true # show terminal output!
