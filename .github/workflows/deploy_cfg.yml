@@ -55,4 +55,5 @@ jobs:
           script: |
             cd /root/gubkinbot/guildenstern
             git pull
-            python3 ./src/run.py
+            pm2 reload all
+          # python3 ./src/run.py
