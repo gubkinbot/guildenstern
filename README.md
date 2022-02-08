@@ -5,3 +5,9 @@
 
   ![""](/.resource/kekw_scheme.png "Kekw")
 </details>
+
+<details> 
+  <summary>[SPOILER] Gachi scheme. version 08.02.22  </summary>
+
+  ![""](/.resource/gachi_scheme.png "Gachi")
+</details>
