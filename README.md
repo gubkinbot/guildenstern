@@ -11,3 +11,9 @@
 
   ![""](/.resource/gachi_scheme.png "Gachi")
 </details>
+
+<details> 
+  <summary>[SPOILER] DB scheme. version 08.02.22  </summary>
+
+  ![""](/.resource/db_scheme.png "Gachi")
+</details>
