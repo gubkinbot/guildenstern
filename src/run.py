@@ -13,11 +13,14 @@ users_counts = len(db.Sql("SELECT * FROM users;"))
 bot=telebot.TeleBot(token)
 @bot.message_handler(commands=['start'])
 def start_message(message):
-  bot.send_message(message.chat.id,f"Hello, World! :3 \n Users counts: {users_counts}\n Your telegram id: {message.from_user.id}")
-  
+
+  next_text = ""
   if not db.Get_id_from_tg_user_id(message.from_user.id):
     db.Add_user(message.from_user.id, 0)
-    bot.send_message(message.chat.id,f"You added own database")
+    next_text = "\n\nYou added own database"
+
+  bot.send_message(message.chat.id,f"Hello, World! :3 \n Users counts: {users_counts}\n Your telegram id: {message.from_user.id} {next_text}")
+  
 
 # askar's test some telebot functionality
 
