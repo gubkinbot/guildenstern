@@ -48,7 +48,14 @@ class DB_binding:
     
     # Gets
 
-    def Get_user_id_from_tg_user_id(self):
+    def Get_id_from_tg_user_id(self, tg_user_id):
+        return self.Sql(f"SELECT id FROM users WHERE tg_user_id = {tg_user_id};")[0]['id']
+    
+    def Get_id_from_time_start_queue(self):
+        # return self.Sql("")
+        pass
+
+    def Get_id_from_time_start_session(self):
         # return self.Sql("")
         pass
 
@@ -72,13 +79,14 @@ class DB_binding:
     def Add_queue(self, user_id, time_start):
         self.Sql(f"INSERT INTO queue(user_id, time_start) VALUES ({user_id}, {time_start});")
 
-    def Add_session(self):
-        # self.Sql("")
-        pass
+    def Add_session(self, user_id_a, user_id_b, time_start):
+        self.Sql(f"INSERT INTO sessions(user_id_a, user_id_b, time_start) VALUES ({user_id_a}, {user_id_b}, {time_start});")
 
-    def Add_log(self):
-        # self.Sql("")
-        pass
+    def Add_log(self, user_id, session_id, message, time_send, type, grade):
+        self.Sql(f"INSERT INTO log(user_id, session_id, message, time_send, type, grade) VALUES ({user_id}, {session_id}, '{message}', {time_send}, '{type}', {grade});")
+
+    def Add_points(self, user_id, delta_points, time_event):
+        self.Sql(f"INSERT INTO points(user_id, delta_points, time_event) VALUES ({user_id}, {delta_points}, {time_event});")
 
     # Updates
 
