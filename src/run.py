@@ -12,7 +12,7 @@ b = a.Sql("SELECT * FROM users;")
 bot=telebot.TeleBot(token)
 @bot.message_handler(commands=['start'])
 def start_message(message):
-  bot.send_message(message.chat.id,f"Hello, World! :3 >{b[0].tg_user_id}<")
+  bot.send_message(message.chat.id,f"Hello, World! :3 >{len(b)}<")
 
 # askar's test some telebot functionality
 
