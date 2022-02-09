@@ -3,6 +3,7 @@ from nltk import sent_tokenize
 import re
 from models.simple_bot import MLChitChat
 
+
 class MessageHandler:
     def __init__(self) -> None:
         self.dialog_model = MLChitChat()
@@ -10,6 +11,7 @@ class MessageHandler:
     def process(self, question):
         question = self.preprocess(question)
 
+        # обрабатываем правилами
         primitive_phrases = [x.lower() for x in ['Как дела', 'Что делаешь', 'Чем занят', 'Как тебя звать', 'Как звать',
                                                 'Как зовут', 'Что нового', 'Давай знакомиться']]
         array_sentences = sent_tokenize(question, language='russian')
@@ -29,6 +31,7 @@ class MessageHandler:
             bad = ''
         if len(bad) > 0:
             bad = '\n\nСообщение легко перехватит Антон. Ты уверен, что хочешь отправить его?: ' + ' '.join(bad) + ' '
+        # если правила не проходят, запускаем модель
         else:
             good = str(self.dialog_model(question))
 

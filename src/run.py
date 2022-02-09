@@ -1,6 +1,6 @@
 import telebot
 from libs.DB_binding import DB_binding
-from libs.preprocessing import preprocessing
+from libs.message_handler import MessageHandler
 import os
 from dotenv import load_dotenv
 
@@ -8,6 +8,7 @@ load_dotenv('./.env')
 token = os.environ.get('TOKEN')
 
 db = DB_binding()
+handler = MessageHandler()
 
 bot=telebot.TeleBot(token)
 @bot.message_handler(commands=['start'])
@@ -23,6 +24,6 @@ def start_message(message):
 
 @bot.message_handler(content_types=["text"])
 def handle_text(message):
-  bot.send_message(message.chat.id, preprocessing(message.text))
+  bot.send_message(message.chat.id, handler.process(message.text))
 
 bot.infinity_polling()
