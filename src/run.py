@@ -1,12 +1,10 @@
 import telebot
 from libs.DB_binding import DB_binding
 import re
-from nltk import sent_tokenize, download
+from nltk import sent_tokenize
 from Levenshtein import distance
 import os
 from dotenv import load_dotenv
-
-download('punkt')
 
 def preprocessing(question):
     question = re.sub(r'\s+', ' ', question) # удаление дублей в пробелах
