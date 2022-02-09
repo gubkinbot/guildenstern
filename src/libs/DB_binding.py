@@ -49,7 +49,8 @@ class DB_binding:
     # Gets
 
     def Get_id_from_tg_user_id(self, tg_user_id):
-        return self.Sql(f"SELECT id FROM users WHERE tg_user_id = {tg_user_id};")[0]['id']
+        id = self.Sql(f"SELECT id FROM users WHERE tg_user_id = {tg_user_id};")
+        return None if id == [] else id[0]['id']
     
     def Get_id_from_time_start_queue(self):
         # return self.Sql("")
@@ -93,7 +94,9 @@ class DB_binding:
 
 # Debug
 
-a = DB_binding()
-b = a.Sql("SELECT * FROM users;")
-for row in b:
-    print(row)
+db = DB_binding()
+# b = db.Sql("SELECT * FROM users;")
+# for row in b:
+#     print(row)
+
+print(db.Get_id_from_tg_user_id(439699346))
