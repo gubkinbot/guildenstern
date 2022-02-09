@@ -19,9 +19,9 @@ def preprocessing(question):
             good.append(sentence)
     if len(good) > 0:
         good = ' '.join(good) + ' '
-    if len(good) = 0:
+    if len(good) == 0:
         good = ''
-    if len(bad) = 0:
+    if len(bad) == 0:
         bad = ''
     if len(bad) > 0:
         bad = 'Это слишком примитивно: ' + ' '.join(bad) + ' '
