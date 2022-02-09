@@ -1,9 +1,6 @@
 import telebot
 from libs.DB_binding import DB_binding
 from libs.preprocessing import preprocessing
-import re
-from nltk import sent_tokenize
-from Levenshtein import distance
 import os
 from dotenv import load_dotenv
 

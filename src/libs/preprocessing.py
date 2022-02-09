@@ -1,3 +1,7 @@
+from Levenshtein import distance
+from nltk import sent_tokenize
+import re
+
 def preprocessing(question):
     question = re.sub(r'\s+', ' ', question) # удаление дублей в пробелах
     question = re.sub(r'(?<=[.,!?:;])(?=[^\s])', r' ', question) # вставка пробелов после знаков препинания
