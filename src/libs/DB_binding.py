@@ -38,7 +38,12 @@ class DB_binding:
         with self.connect.cursor(cursor_factory=DictCursor) as cursor:
             cursor.execute(sql_query)
 
-            res_0 = cursor.fetchall()
+            try:
+                res_0 = cursor.fetchall()
+            except Exception as e:
+                print(f"Error: sql_query{sql_query}")
+                print(e)
+                return None
 
             res = []
             for row in res_0:
