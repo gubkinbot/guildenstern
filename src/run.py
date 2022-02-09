@@ -17,7 +17,7 @@ def start_message(message):
   
   if not db.Get_id_from_tg_user_id(message.from_user.id):
     db.Add_user(message.from_user.id, 0)
-    bot.send_message(message.chat.id,f"\n\nYou added own database")
+    bot.send_message(message.chat.id,f"You added own database")
 
 # askar's test some telebot functionality
 
