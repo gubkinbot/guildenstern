@@ -1,7 +1,10 @@
 from Levenshtein import distance
 from nltk import sent_tokenize
 import re
-from models.simple_bot import MLChitChat
+if __name__ == '__main__':
+    from models.simple_bot import MLChitChat
+else:
+    from .models.simple_bot import MLChitChat
 
 
 class MessageHandler:
