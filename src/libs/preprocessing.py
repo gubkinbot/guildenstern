@@ -24,6 +24,6 @@ def preprocessing(question):
     if len(bad) == 0:
         bad = ''
     if len(bad) > 0:
-        bad = 'Это слишком примитивно: ' + ' '.join(bad) + ' '
+        bad = 'Сообщение легко перехватит Антон. Ты уверен, что хочешь отправить его?: ' + ' '.join(bad) + ' '
     
     return good + bad
