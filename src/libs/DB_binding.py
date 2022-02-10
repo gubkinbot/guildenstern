@@ -41,7 +41,7 @@ class DB_binding:
             try:
                 res_0 = cursor.fetchall()
             except Exception as e:
-                print(f"Error: sql_query{sql_query}")
+                print(f"Error: sql_query: {sql_query}")
                 print(e)
                 return None
 
@@ -99,9 +99,9 @@ class DB_binding:
 
 # Debug
 
-db = DB_binding()
+# db = DB_binding()
 # b = db.Sql("SELECT * FROM users;")
 # for row in b:
 #     print(row)
 
-print(db.Get_id_from_tg_user_id(439699346))
+# print(db.Get_id_from_tg_user_id(439699346))

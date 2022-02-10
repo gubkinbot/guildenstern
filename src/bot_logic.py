@@ -1,3 +1,4 @@
+from threading import Thread
 import schedule
 import time
 
@@ -9,7 +10,9 @@ class Bot_logic:
     def init(self):
         # get current queue
         # get current sessions
-        schedule.every(10).seconds.do(self.queue_schedule)
+        
+        schedule.every(5).seconds.do(self.queue_schedule)
+        Thread(target=self.schedule_checker).start()
 
         self.commands = {
             'start': self.cmd_start, 
@@ -34,4 +37,8 @@ class Bot_logic:
         queue_counts = 0
         session_counts = 0
         self.send(tg_user_id, f'Online users:\nin queue - {queue_counts}\nin conversations - {session_counts}')
-        
+    
+    def schedule_checher():
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
