@@ -21,7 +21,7 @@ logic.send = bot.send_message
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
-  logic.handler_start(message)
+  logic.handler_start(message.from_user.id)
 
 # askar's test some telebot functionality
 
