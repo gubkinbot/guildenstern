@@ -34,8 +34,10 @@ class Bot_logic:
 
     def handler_commands(self, command_name, tg_user_id):
         self.commands[command_name](tg_user_id)
+        print("run command")
 
     def handler_message(self, tg_user_id, message):
+        
         time_send = time.time()
         session_id = None
         tg_user_id_companion = None
