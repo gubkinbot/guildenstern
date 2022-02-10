@@ -58,11 +58,11 @@ class DB_binding:
         return None if id == [] else id[0]['id']
     
     def Get_queue_id_from_time_start(self, time_start):
-        id = self.Sql(f"SELECT id FROM queue WHERE time_start = {time_start};")
+        id = self.Sql(f"SELECT id, EXTRACT(epoch FROM time_start) FROM queue WHERE {time_start} = EXTRACT(epoch FROM time_start);")
         return None if id == [] else id[0]['id']
 
     def Get_session_id_from_time_start(self, time_start):
-        id = self.Sql(f"SELECT id FROM sessions WHERE time_start = {time_start};")
+        id = self.Sql(f"SELECT id, EXTRACT(epoch FROM time_start) FROM sessions WHERE {time_start} = EXTRACT(epoch FROM time_start);")
         return None if id == [] else id[0]['id']
 
     def Get_current_queue(self):
