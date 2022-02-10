@@ -9,8 +9,8 @@ class Bot_logic:
     current_sessions = [] # [{'session_id':0 ,'tg_user_id_a': 0, 'tg_user_id_b': 0, 'time_start': 0}, ...]
 
     def init(self):
-        # self.current_queue = self.db.Get_current_queue() # <>
-        # self.current_sessions= self.db.Get_current_sessions() # <>
+        self.current_queue = self.db.Get_current_queue()
+        self.current_sessions= self.db.Get_current_sessions()
 
         schedule.every(5).seconds.do(self.queue_schedule)
 
@@ -18,6 +18,8 @@ class Bot_logic:
             'start': self.cmd_start,
             'stop': self.cmd_stop
         }
+
+    # handlers
 
     def handler_commands(self, command_name, tg_user_id):
         self.commands[command_name](tg_user_id)
@@ -43,6 +45,8 @@ class Bot_logic:
             self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
         else:
             self.send(tg_user_id,  self.modify_msg(message))
+    
+    # schedulers
 
     def queue_schedule(self):
         time_stemp = int(time.time()*1000)/1000
@@ -74,6 +78,7 @@ class Bot_logic:
 
             self.add_to_sessions(tg_user_id_a, tg_user_id_b, time_stemp)
 
+    # commands
 
     def cmd_start(self, tg_user_id):
         time_stemp = int(time.time()*1000)/1000
@@ -91,7 +96,9 @@ class Bot_logic:
 
     def cmd_stop(self, tg_user_id):
         time_stemp = int(time.time()*1000)/1000
-        self.stop_session(tg_user_id, time_stemp)
+        self.stop_session(tg_user_id, time_stemp, "command_stop")
+
+    # utils
 
     def add_to_queue(self, tg_user_id, time_stemp):
         self.db.Add_queue(tg_user_id, time_stemp)
@@ -103,7 +110,7 @@ class Bot_logic:
     def add_to_sessions(self, tg_user_id_a, tg_user_id_b, time_stemp):
         self.db.Add_session(tg_user_id_a, tg_user_id_b, time_stemp)
 
-        # session_id = self.db.Get_session_id_from_time_start(time_stemp) # <>
+        session_id = self.db.Get_session_id_from_time_start(time_stemp)
         self.current_sessions.append({'session_id': session_id, 'tg_user_id_a': tg_user_id_a, 'tg_user_id_b': tg_user_id_b, 'time_start': time_stemp})
         
         self.stop_queue(tg_user_id_a, tg_user_id_b, time_stemp, session_id)
@@ -111,12 +118,12 @@ class Bot_logic:
     def stop_queue(self, tg_user_id_a, tg_user_id_b, time_stemp, session_id):
         for user_in_queue in self.current_queue:
             if user_in_queue['tg_user_id'] == tg_user_id_a or user_in_queue['tg_user_id'] ==  tg_user_id_b:
-                self.db.Stop_queue(user_in_queue['tg_user_id'], time_stemp, session_id)
+                self.db.Stop_queue(user_in_queue['queue_id'], time_stemp, session_id)
                 self.current_queue.remove(user_in_queue)
 
-    def stop_session(self, tg_user_id, time_stemp):
+    def stop_session(self, tg_user_id, time_stemp, status):
         for session in self.current_sessions:
             if (session['tg_user_id_a'] == tg_user_id or
                 session['tg_user_id_b'] == tg_user_id ):
-                self.db.Stop_session(session['session_id'], time_stemp, "command_stop")
+                self.db.Stop_session(session['session_id'], time_stemp, status)
                 self.current_sessions.remove(session)

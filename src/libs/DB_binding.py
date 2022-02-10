@@ -57,13 +57,13 @@ class DB_binding:
         id = self.Sql(f"SELECT id FROM users WHERE tg_user_id = {tg_user_id};")
         return None if id == [] else id[0]['id']
     
-    def Get_queue_id_from_time_start(self):
-        # return self.Sql("")
-        pass
+    def Get_queue_id_from_time_start(self, time_start):
+        id = self.Sql(f"SELECT id FROM queue WHERE time_start = {time_start};")
+        return None if id == [] else id[0]['id']
 
     def Get_session_id_from_time_start(self, time_start):
-        # return self.Sql("") # <>
-        pass
+        id = self.Sql(f"SELECT id FROM sessions WHERE time_start = {time_start};")
+        return None if id == [] else id[0]['id']
 
     def Get_current_queue(self):
         # return self.Sql("") # <>
@@ -73,9 +73,9 @@ class DB_binding:
         # return self.Sql("") # <>
         pass
 
-    def Get_current_counts_msg_in_sessions(self):
-        # return self.Sql("")
-        pass
+    # def Get_current_counts_msg_in_sessions(self):
+    #     # return self.Sql("")
+    #     pass
     
     def Get_last_companion(self, tg_user_id):
         user_id = self.Get_id_from_tg_user_id(tg_user_id)
@@ -112,11 +112,13 @@ class DB_binding:
 
     # Updates
 
-    def Stop_queue(self, tg_user_id, time_stop, session_id):
-        pass
+    def Stop_queue(self, queue_id, time_stop, session_id):
+        self.Sql(f"UPDATE queue SET time_stop = {time_stop}, session_id = {session_id} WHERE id = {queue_id};")
+
+    # def Stop_queue_without_session_id(self, queue_id, time_stop, session_id):
 
     def Stop_session(self, session_id, time_stop, status):
-        pass
+        self.Sql(f"UPDATE queue SET time_stop = {time_stop}, status = {status} WHERE id = {session_id};")
 
 # Debug
 
