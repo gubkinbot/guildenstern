@@ -1,5 +1,10 @@
 import torch
-import yaml
+
+try:
+    import yaml
+except Exception as e:
+    print(f"Error: kekw import yaml")
+
 from os import path as os_path
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 
