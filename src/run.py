@@ -2,9 +2,10 @@ from bot_logic import Bot_logic
 from libs.DB_binding import DB_binding
 from libs.message_handler import MessageHandler
 
+import os
+
 import telebot
 
-import os
 from dotenv import load_dotenv
 load_dotenv('./.env')
 token = os.environ.get('TOKEN')
@@ -18,7 +19,7 @@ logic.db = db
 logic.modify_msg = handler.process
 logic.send = bot.send_message
 
-
+logic.init()
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
