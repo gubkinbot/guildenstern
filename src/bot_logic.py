@@ -9,7 +9,7 @@ class Bot_logic:
         # get current queue
         # get current sessions
 
-        schedule.every(5).seconds.do(self.queue_schedule)
+        schedule.every(20).seconds.do(self.queue_schedule)
 
         self.commands = {
             'start': self.cmd_start, 
@@ -22,8 +22,7 @@ class Bot_logic:
         self.send(tg_user_id,  self.modify_msg(message))
 
     def queue_schedule(self):
-        print("kek")
-        # print( int(time.time()) )
+        print( int(time.time()) )
         pass
 
     def cmd_start(self, tg_user_id):
