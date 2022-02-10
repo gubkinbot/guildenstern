@@ -44,7 +44,7 @@ class Bot_logic:
             self.send(tg_user_id_companion, message) # <--- add random put bot message
             self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
         else:
-            self.send(tg_user_id,  self.modify_msg(message))
+            self.send(tg_user_id,  self.modify_msg(message), parse_mode='Markdown')
     
     # schedulers
 

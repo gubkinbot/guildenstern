@@ -52,7 +52,7 @@ class MessageHandler:
             
             ###
 
-            good = '<b>Выберите, какое из сообщений отправить собеседнику:\n\n</b>' + str(msg_start+msg_end)
+            good = '*Выберите, какое из сообщений отправить собеседнику:*\n\n' + str(msg_start+msg_end)
 
         return self.postprocess(good + bad)
 
