@@ -49,7 +49,7 @@ class MessageHandler:
             
             ###
 
-            good = str(msg_start+msg_end)
+            good = str(msg_start+msg_end) + str(model_msg)
 
         return self.postprocess(good + bad)
 
