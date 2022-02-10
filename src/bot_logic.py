@@ -5,11 +5,22 @@ class Bot_logic:
     db = None # DB_binding()
     modify_msg = None # MessageHandler()
 
-    current_queue = [{}] # [{'queue_id':0, 'tg_user_id':0, 'time_start':0, 'last_companion': 0}, ...]
-    current_sessions = [{}] # [{'session_id':0 ,'tg_user_id_a': 0, 'tg_user_id_b': 0, 'time_start': 0}, ...]
+    current_queue = [] # [{'queue_id':0, 'tg_user_id':0, 'time_start':0, 'last_companion': 0}, ...]
+    current_sessions = [] # [{'session_id':0 ,'tg_user_id_a': 0, 'tg_user_id_b': 0, 'time_start': 0}, ...]
 
     def init(self):
-        self.current_queue = self.db.Get_current_queue()
+        current_queue = self.db.Get_current_queue()
+        for v in current_queue:
+            tg_user_id = self.db.Get_tg_user_id_from_id(v['user_id'])
+            last_companion = self.db.Get_last_companion(tg_user_id)
+            self.current_queue.append({'queue_id': v["id"], 'tg_user_id': tg_user_id, 'time_start': v['time_start'], 'last_companion': last_companion})
+
+        current_sessions = self.db.Get_current_sessions()
+        for v in current_sessions:
+            tg_user_id_a = self.db.Get_tg_user_id_from_id(v['user_id_a'])
+            tg_user_id_b = self.db.Get_tg_user_id_from_id(v['user_id_b'])
+            self.current_sessions.append({'session_id': v["id"], 'tg_user_id_a': tg_user_id_a, 'tg_user_id_b': tg_user_id_b, 'time_start': v['time_start']})
+
         self.current_sessions= self.db.Get_current_sessions()
 
         schedule.every(5).seconds.do(self.queue_schedule)

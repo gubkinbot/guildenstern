@@ -56,6 +56,10 @@ class DB_binding:
     def Get_id_from_tg_user_id(self, tg_user_id):
         id = self.Sql(f"SELECT id FROM users WHERE tg_user_id = {tg_user_id};")
         return None if id == [] else id[0]['id']
+
+    def Get_tg_user_id_from_id(self, user_id):
+        id = self.Sql(f"SELECT tg_user_id FROM users WHERE user_id = {user_id};")
+        return None if id == [] else id[0]['tg_user_id']
     
     def Get_queue_id_from_time_start(self, time_start):
         id = self.Sql(f"SELECT id, EXTRACT(epoch FROM time_start) FROM queue WHERE {time_start} = EXTRACT(epoch FROM time_start);")
