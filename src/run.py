@@ -28,6 +28,6 @@ def start_message(message):
 
 @bot.message_handler(content_types=["text"])
 def handle_text(message):
-  logic.handler_start(message.from_user.id, message.text)
+  logic.handler_message(message.from_user.id, message.text)
 
 bot.infinity_polling()
