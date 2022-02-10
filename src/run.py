@@ -23,7 +23,7 @@ logic.init()
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
-  logic.handler_start(message.from_user.id)
+  logic.handler_commands('start', message.from_user.id)
 
 # askar was here
 
