@@ -21,8 +21,6 @@ class Bot_logic:
             tg_user_id_b = self.db.Get_tg_user_id_from_id(v['user_id_b'])
             self.current_sessions.append({'session_id': v["id"], 'tg_user_id_a': tg_user_id_a, 'tg_user_id_b': tg_user_id_b, 'time_start': v['time_start'].timestamp()})
 
-        self.current_sessions= self.db.Get_current_sessions()
-
         schedule.every(5).seconds.do(self.queue_schedule)
 
         self.commands = {
