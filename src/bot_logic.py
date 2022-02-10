@@ -146,4 +146,8 @@ class Bot_logic:
             if (session['tg_user_id_a'] == tg_user_id or
                 session['tg_user_id_b'] == tg_user_id ):
                 self.db.Stop_session(session['session_id'], time_stemp, status)
+                
+                self.send(session['tg_user_id_a'], '---\nSession stopped.\n---')
+                self.send(session['tg_user_id_b'], '---\nSession stopped.\n---')
+
                 self.current_sessions.remove(session)
