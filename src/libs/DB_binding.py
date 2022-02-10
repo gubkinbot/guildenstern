@@ -57,9 +57,9 @@ class DB_binding:
         id = self.Sql(f"SELECT id FROM users WHERE tg_user_id = {tg_user_id};")
         return None if id == [] else id[0]['id']
     
-    # def Get_queue_id_from_time_start(self):
-    #     # return self.Sql("")
-    #     pass
+    def Get_queue_id_from_time_start(self):
+        # return self.Sql("")
+        pass
 
     def Get_session_id_from_time_start(self, time_start):
         # return self.Sql("") # <>
@@ -100,16 +100,23 @@ class DB_binding:
         time_start = int(time_start*1000)/1000
         self.Sql(f"INSERT INTO sessions(user_id_a, user_id_b, time_start) VALUES ({user_id_a}, {user_id_b}, to_timestamp({time_start}));")
 
-    def Add_log(self, user_id, session_id, message, time_send, type, grade):
+    def Add_log(self, tg_user_id, session_id, message, time_send, type, grade):
+        user_id = self.Get_id_from_tg_user_id(tg_user_id)
         time_send = int(time_send*1000)/1000
         self.Sql(f"INSERT INTO log(user_id, session_id, message, time_send, type, grade) VALUES ({user_id}, {session_id}, '{message}', to_timestamp({time_send}), '{type}', {grade});")
 
-    def Add_points(self, user_id, delta_points, time_event):
+    def Add_points(self, tg_user_id, delta_points, time_event):
+        user_id = self.Get_id_from_tg_user_id(tg_user_id)
         time_event = int(time_event*1000)/1000
         self.Sql(f"INSERT INTO points(user_id, delta_points, time_event) VALUES ({user_id}, {delta_points}, to_timestamp({time_event}) );")
 
     # Updates
 
+    def Stop_queue(self, tg_user_id, time_stop, session_id):
+        pass
+
+    def Stop_session(self, session_id, time_stop, status):
+        pass
 
 # Debug
 

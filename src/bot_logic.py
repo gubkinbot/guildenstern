@@ -5,7 +5,7 @@ class Bot_logic:
     db = None # DB_binding()
     modify_msg = None # MessageHandler()
 
-    current_queue = [] # [{'tg_user_id':0, 'time_start':0, 'last_companion': 0}, ...]
+    current_queue = [] # [{'queue_id':0, 'tg_user_id':0, 'time_start':0, 'last_companion': 0}, ...]
     current_sessions = [] # [{'session_id':0 ,'tg_user_id_a': 0, 'tg_user_id_b': 0, 'time_start': 0}, ...]
 
     def init(self):
@@ -15,19 +15,40 @@ class Bot_logic:
         schedule.every(5).seconds.do(self.queue_schedule)
 
         self.commands = {
-            'start': self.cmd_start, 
+            'start': self.cmd_start,
+            'stop': self.cmd_stop
         }
 
     def handler_commands(self, command_name, tg_user_id):
         self.commands[command_name](tg_user_id)
 
     def handler_message(self, tg_user_id, message):
-        self.send(tg_user_id,  self.modify_msg(message))
+        time_send = time.time()
+        session_id = None
+        tg_user_id_companion = None
+
+        for session in self.current_sessions:
+            if session['tg_user_id_a'] == tg_user_id:
+                tg_user_id_companion = session['tg_user_id_b']
+                session_id = session['session_id']
+                break
+            if session['tg_user_id_b'] == tg_user_id:
+                tg_user_id_companion = session['tg_user_id_a']
+                session_id = session['session_id']
+                break
+            
+        if session_id:
+            # time.sleep(0)
+            self.send(tg_user_id_companion, message) # <--- add random put bot message
+            self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
+        else:
+            self.send(tg_user_id,  self.modify_msg(message))
 
     def queue_schedule(self):
+        time_stemp = int(time.time()*1000)/1000
+        
         will_be_connection = {} # {'tg_user_id_a': ['tg_user_id_b','tg_user_id_c'], ... }
 
-        time_stemp = time.time()
         for user_a in self.current_queue:
             waiting_time = time_stemp - user_a['time_start']
             if waiting_time > 10:
@@ -48,17 +69,14 @@ class Bot_logic:
         for tg_user_id_a, list_users_b in will_be_connection.items():
             tg_user_id_b = random.choice(list_users_b)
 
-            
             self.send(tg_user_id_a, '---\nCompanion found!\nPlease, send message.\n---')
             self.send(tg_user_id_b, '---\nCompanion found!\nPlease, send message.\n---')
 
-            self.db.Add_session(tg_user_id_a, tg_user_id_b, time_stemp)
+            self.add_to_sessions(tg_user_id_a, tg_user_id_b, time_stemp)
 
-            # session_id = self.db.Get_session_id_from_time_start(time_stemp) # <>
-            self.current_sessions.append({'session_id': session_id, 'tg_user_id_a': tg_user_id_a, 'tg_user_id_b': tg_user_id_b, 'time_start': time_stemp})
-            
 
     def cmd_start(self, tg_user_id):
+        time_stemp = int(time.time()*1000)/1000
         if not self.db.Get_id_from_tg_user_id(tg_user_id):
             self.db.Add_user(tg_user_id, 0)
             self.send(tg_user_id,f"Приветственное сообщение, если здесь впервые.")
@@ -69,12 +87,36 @@ class Bot_logic:
         self.send(tg_user_id, f'Online users:\nin queue - {queue_counts}\nin sessions - {session_counts}\n')
         self.send(tg_user_id, f'Please wait at least 10 seconds...')
 
-        self.add_to_queue(tg_user_id)
+        self.add_to_queue(tg_user_id, time_stemp)
 
-    def add_to_queue(self, tg_user_id):
+    def cmd_stop(self, tg_user_id):
         time_stemp = int(time.time()*1000)/1000
-        last_companion = self.db.Get_last_companion(tg_user_id)
-        self.current_queue.append({'tg_user_id': tg_user_id, 'time_start':time_stemp, 'last_companion': last_companion},)
+        self.stop_session(tg_user_id, time_stemp)
 
+    def add_to_queue(self, tg_user_id, time_stemp):
         self.db.Add_queue(tg_user_id, time_stemp)
-        pass
+
+        queue_id = self.db.Get_queue_id_from_time_start(time_stemp)
+        last_companion = self.db.Get_last_companion(tg_user_id)
+        self.current_queue.append({'queue_id': queue_id,'tg_user_id': tg_user_id, 'time_start': time_stemp, 'last_companion': last_companion})
+
+    def add_to_sessions(self, tg_user_id_a, tg_user_id_b, time_stemp):
+        self.db.Add_session(tg_user_id_a, tg_user_id_b, time_stemp)
+
+        # session_id = self.db.Get_session_id_from_time_start(time_stemp) # <>
+        self.current_sessions.append({'session_id': session_id, 'tg_user_id_a': tg_user_id_a, 'tg_user_id_b': tg_user_id_b, 'time_start': time_stemp})
+        
+        self.stop_queue(tg_user_id_a, tg_user_id_b, time_stemp, session_id)
+
+    def stop_queue(self, tg_user_id_a, tg_user_id_b, time_stemp, session_id):
+        for user_in_queue in self.current_queue:
+            if user_in_queue['tg_user_id'] == tg_user_id_a or user_in_queue['tg_user_id'] ==  tg_user_id_b:
+                self.db.Stop_queue(user_in_queue['tg_user_id'], time_stemp, session_id)
+                self.current_queue.remove(user_in_queue)
+
+    def stop_session(self, tg_user_id, time_stemp):
+        for session in self.current_sessions:
+            if (session['tg_user_id_a'] == tg_user_id or
+                session['tg_user_id_b'] == tg_user_id ):
+                self.db.Stop_session(session['session_id'], time_stemp, "command_stop")
+                self.current_sessions.remove(session)
