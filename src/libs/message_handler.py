@@ -42,14 +42,17 @@ class MessageHandler:
 
             msg_start = ""
             msg_end = ""
-
+            
+            i = 1
             for row in model_msg:
-                msg_start += row[0] + "\n\n"
-                msg_end += str(row[1]) + "\n"
+                msg_start += f'{str(i)}. ' + row[0] + "\n\n"
+                # msg_end += str(row[1]) + "\n"
+                i += 1
+                
             
             ###
 
-            good = str(msg_start+msg_end)
+            good = '<b>Выберите, какое из сообщений отправить собеседнику:\n\n</b>' + str(msg_start+msg_end)
 
         return self.postprocess(good + bad)
 
