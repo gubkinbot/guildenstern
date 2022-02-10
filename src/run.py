@@ -1,6 +1,9 @@
 import telebot
+from bot_logic import Bot_logic
 from libs.DB_binding import DB_binding
 from libs.message_handler import MessageHandler
+from bot_logic import Bot_logic
+
 import os
 from dotenv import load_dotenv
 
@@ -9,22 +12,16 @@ token = os.environ.get('TOKEN')
 
 db = DB_binding()
 handler = MessageHandler()
+logic = Bot_logic()
 
 bot=telebot.TeleBot(token)
+
+logic.db = db
+logic.send = bot.send_message
+
 @bot.message_handler(commands=['start'])
 def start_message(message):
-  users_counts = len(db.Sql("SELECT * FROM users;"))
-  bot.send_message(message.chat.id,
-  f'''
-  Hello, World! :3
-  Users counts: {users_counts}
-  Your telegram id: {message.from_user.id}
-  Your chad id: {message.chat.id}
-  ''')
-  
-  if not db.Get_id_from_tg_user_id(message.from_user.id):
-    db.Add_user(message.from_user.id, 0)
-    bot.send_message(message.chat.id,f"You added own database")
+  logic.handler_start(message)
 
 # askar's test some telebot functionality
 
