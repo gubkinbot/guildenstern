@@ -22,7 +22,7 @@ Users counts: {users_counts}
             self.send(tg_user_id,f"You added own database")
 
     def handler_message(self, tg_user_id, message):
-        modified_msg = json.load(self.modify_msg(message)) # -_-
+        modified_msg = json.loads(self.modify_msg(message)) # -_-
 
         msg_start = ""
         msg_end = ""
