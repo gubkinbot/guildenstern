@@ -43,6 +43,11 @@ class Bot_logic:
         tg_user_id_companion = None
 
         for session in self.current_sessions:
+
+            for k in session.keys():
+                print(f"{k}\n")
+            print()
+
             if session['tg_user_id_a'] == tg_user_id:
                 tg_user_id_companion = session['tg_user_id_b']
                 session_id = session['session_id']
