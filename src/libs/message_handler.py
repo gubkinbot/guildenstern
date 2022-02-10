@@ -36,7 +36,20 @@ class MessageHandler:
             bad = '\n\nСообщение легко перехватит Антон. Ты уверен, что хочешь отправить его?: ' + ' '.join(bad) + ' '
         # если правила не проходят, запускаем модель
         else:
-            good = str(self.dialog_model(question))
+            model_msg = self.dialog_model(question)
+
+            ### kekw
+
+            msg_start = ""
+            msg_end = ""
+
+            for row in model_msg:
+                msg_start += row[0] + "\n\n"
+                msg_end += row[1] + "\n"
+            
+            ###
+
+            good = str(msg_start+msg_end)
 
         return self.postprocess(good + bad)
 

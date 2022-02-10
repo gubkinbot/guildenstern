@@ -1,5 +1,3 @@
-import json
-
 class Bot_logic:
     send = None # def send(tg_user_id, send_message)
     db = None # DB_binding()
@@ -22,15 +20,6 @@ Users counts: {users_counts}
             self.send(tg_user_id,f"You added own database")
 
     def handler_message(self, tg_user_id, message):
-        modified_msg = json.loads(self.modify_msg(message)) # -_-
-
-        msg_start = ""
-        msg_end = ""
-
-        for row in modified_msg:
-            msg_start += row[0] + "\n\n"
-            msg_end += row[1] + "\n"
-        
-        self.send(tg_user_id, msg_start+msg_end)
+        self.send(tg_user_id,  self.modify_msg(message))
 
     
