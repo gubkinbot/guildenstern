@@ -115,12 +115,12 @@ class DB_binding:
     # Updates
 
     def Stop_queue(self, queue_id, time_stop, session_id):
-        self.Sql(f"UPDATE queue SET time_stop = {time_stop}, session_id = {session_id} WHERE id = {queue_id};")
+        self.Sql(f"UPDATE queue SET time_stop = to_timestamp({time_stop}), session_id = {session_id} WHERE id = {queue_id};")
 
     # def Stop_queue_without_session_id(self, queue_id, time_stop, session_id):
 
     def Stop_session(self, session_id, time_stop, status):
-        self.Sql(f"UPDATE queue SET time_stop = {time_stop}, status = {status} WHERE id = {session_id};")
+        self.Sql(f"UPDATE queue SET time_stop = to_timestamp({time_stop}), status = {status} WHERE id = {session_id};")
 
 # Debug
 
