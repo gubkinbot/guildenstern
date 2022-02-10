@@ -13,13 +13,13 @@ class Bot_logic:
         for v in current_queue:
             tg_user_id = self.db.Get_tg_user_id_from_id(v['user_id'])
             last_companion = self.db.Get_last_companion(tg_user_id)
-            self.current_queue.append({'queue_id': v["id"], 'tg_user_id': tg_user_id, 'time_start': v['time_start'], 'last_companion': last_companion})
+            self.current_queue.append({'queue_id': v["id"], 'tg_user_id': tg_user_id, 'time_start': v['time_start'].timestamp(), 'last_companion': last_companion})
 
         current_sessions = self.db.Get_current_sessions()
         for v in current_sessions:
             tg_user_id_a = self.db.Get_tg_user_id_from_id(v['user_id_a'])
             tg_user_id_b = self.db.Get_tg_user_id_from_id(v['user_id_b'])
-            self.current_sessions.append({'session_id': v["id"], 'tg_user_id_a': tg_user_id_a, 'tg_user_id_b': tg_user_id_b, 'time_start': v['time_start']})
+            self.current_sessions.append({'session_id': v["id"], 'tg_user_id_a': tg_user_id_a, 'tg_user_id_b': tg_user_id_b, 'time_start': v['time_start'].timestamp()})
 
         self.current_sessions= self.db.Get_current_sessions()
 
