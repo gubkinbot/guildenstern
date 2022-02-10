@@ -5,8 +5,8 @@ class Bot_logic:
     db = None # DB_binding()
     modify_msg = None # MessageHandler()
 
-    current_queue = [] # [{'queue_id':0, 'tg_user_id':0, 'time_start':0, 'last_companion': 0}, ...]
-    current_sessions = [] # [{'session_id':0 ,'tg_user_id_a': 0, 'tg_user_id_b': 0, 'time_start': 0}, ...]
+    current_queue = [{}] # [{'queue_id':0, 'tg_user_id':0, 'time_start':0, 'last_companion': 0}, ...]
+    current_sessions = [{}] # [{'session_id':0 ,'tg_user_id_a': 0, 'tg_user_id_b': 0, 'time_start': 0}, ...]
 
     def init(self):
         self.current_queue = self.db.Get_current_queue()
