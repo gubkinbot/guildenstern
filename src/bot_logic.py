@@ -54,6 +54,10 @@ class Bot_logic:
         will_be_connection = {} # {'tg_user_id_a': ['tg_user_id_b','tg_user_id_c'], ... }
 
         for user_a in self.current_queue:
+            for kekw in user_a.keys():
+                print(kekw)
+
+            print()
             waiting_time = time_stemp - user_a['time_start']
             if waiting_time > 10:
                 for user_b in self.current_queue:
@@ -101,6 +105,10 @@ class Bot_logic:
     # utils
 
     def add_to_queue(self, tg_user_id, time_stemp):
+        for user_in_queue in self.current_queue:
+            if user_in_queue['tg_user_id'] == tg_user_id:
+                return
+
         self.db.Add_queue(tg_user_id, time_stemp)
 
         queue_id = self.db.Get_queue_id_from_time_start(time_stemp)
