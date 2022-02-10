@@ -38,7 +38,7 @@ class Bot_logic:
         session_counts = 0
         self.send(tg_user_id, f'Online users:\nin queue - {queue_counts}\nin conversations - {session_counts}')
     
-    def schedule_checher():
+    def schedule_checker():
         while True:
             schedule.run_pending()
             time.sleep(1)
