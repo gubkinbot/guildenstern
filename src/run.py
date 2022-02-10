@@ -2,7 +2,7 @@ from bot_logic import Bot_logic
 from libs.DB_binding import DB_binding
 from libs.message_handler import MessageHandler
 
-import os
+import os, schedule, time
 
 import telebot
 import threading
@@ -35,4 +35,6 @@ def handle_text(message):
 #bot.infinity_polling()
 if __name__ == '__main__':
   threading.Thread(target=bot.infinity_polling, name='bot_infinity_polling', daemon=True).start()
-  logic.schedule_checker()
+  while True:
+    schedule.run_pending()
+    time.sleep(1)

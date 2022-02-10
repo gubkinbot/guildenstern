@@ -1,5 +1,4 @@
-import schedule
-import time
+import schedule, time
 
 class Bot_logic:
     send = None # def send(tg_user_id, send_message)
@@ -23,7 +22,8 @@ class Bot_logic:
         self.send(tg_user_id,  self.modify_msg(message))
 
     def queue_schedule(self):
-        print( int(time.time()) )
+        print("kek")
+        # print( int(time.time()) )
         pass
 
     def cmd_start(self, tg_user_id):
@@ -35,8 +35,3 @@ class Bot_logic:
         queue_counts = 0
         session_counts = 0
         self.send(tg_user_id, f'Online users:\nin queue - {queue_counts}\nin conversations - {session_counts}')
-    
-    def schedule_checker():
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
