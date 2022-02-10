@@ -66,10 +66,10 @@ class DB_binding:
         return None if id == [] else id[0]['id']
 
     def Get_current_queue(self):
-        return self.Sql(f"SELECT id FROM queue WHERE time_stop IS NULL;")
+        return self.Sql(f"SELECT * FROM queue WHERE time_stop IS NULL;")
 
     def Get_current_sessions(self):
-        return self.Sql(f"SELECT id FROM sessions WHERE time_stop IS NULL;")
+        return self.Sql(f"SELECT * FROM sessions WHERE time_stop IS NULL;")
 
     # def Get_current_counts_msg_in_sessions(self):
     #     # return self.Sql("")
