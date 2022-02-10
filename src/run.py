@@ -5,6 +5,7 @@ from libs.message_handler import MessageHandler
 import os
 
 import telebot
+import threading
 
 from dotenv import load_dotenv
 load_dotenv('./.env')
@@ -31,4 +32,7 @@ def start_message(message):
 def handle_text(message):
   logic.handler_message(message.from_user.id, message.text)
 
-bot.infinity_polling()
+#bot.infinity_polling()
+if __name__ == '__main__':
+  threading.Thread(target=bot.infinity_polling, name='bot_infinity_polling', daemon=True).start()
+  logic.schedule_checker()

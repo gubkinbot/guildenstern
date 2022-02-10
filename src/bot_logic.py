@@ -1,4 +1,3 @@
-from threading import Thread
 import schedule
 import time
 
@@ -10,9 +9,8 @@ class Bot_logic:
     def init(self):
         # get current queue
         # get current sessions
-        
+
         schedule.every(5).seconds.do(self.queue_schedule)
-        Thread(target=self.schedule_checker).start()
 
         self.commands = {
             'start': self.cmd_start, 
