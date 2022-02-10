@@ -45,7 +45,7 @@ class MessageHandler:
 
             for row in model_msg:
                 msg_start += row[0] + "\n\n"
-                msg_end += "`" + str(row[1]) + "`" + "\n"
+                msg_end += str(row[1]) + "\n"
             
             ###
 
