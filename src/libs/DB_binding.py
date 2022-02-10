@@ -57,51 +57,69 @@ class DB_binding:
         id = self.Sql(f"SELECT id FROM users WHERE tg_user_id = {tg_user_id};")
         return None if id == [] else id[0]['id']
     
-    def Get_id_from_time_start_queue(self):
-        # return self.Sql("")
-        pass
+    # def Get_queue_id_from_time_start(self):
+    #     # return self.Sql("")
+    #     pass
 
-    def Get_id_from_time_start_session(self):
-        # return self.Sql("")
+    def Get_session_id_from_time_start(self, time_start):
+        # return self.Sql("") # <>
         pass
 
     def Get_current_queue(self):
-        # return self.Sql("")
+        # return self.Sql("") # <>
         pass
 
     def Get_current_sessions(self):
-        # return self.Sql("")
+        # return self.Sql("") # <>
         pass
 
     def Get_current_counts_msg_in_sessions(self):
         # return self.Sql("")
         pass
+    
+    def Get_last_companion(self, tg_user_id):
+        user_id = self.Get_id_from_tg_user_id(tg_user_id)
+
+        last_companion = None # self.Sql("") # <>
+
+        return last_companion if last_companion else 0
 
     # Adds
 
     def Add_user(self, tg_user_id, social_credit):
         self.Sql(f"INSERT INTO users(tg_user_id, social_credit) VALUES ({tg_user_id}, {social_credit});")
 
-    def Add_queue(self, user_id, time_start):
-        self.Sql(f"INSERT INTO queue(user_id, time_start) VALUES ({user_id}, {time_start});")
+    def Add_queue(self, tg_user_id, time_start):
+        user_id = self.Get_id_from_tg_user_id(tg_user_id)
+        time_start = int(time_start*1000)/1000
+        self.Sql(f"INSERT INTO queue(user_id, time_start) VALUES ({user_id}, to_timestamp({time_start}));")
 
-    def Add_session(self, user_id_a, user_id_b, time_start):
-        self.Sql(f"INSERT INTO sessions(user_id_a, user_id_b, time_start) VALUES ({user_id_a}, {user_id_b}, {time_start});")
+    def Add_session(self, tg_user_id_a, tg_user_id_b, time_start):
+        user_id_a = self.Get_id_from_tg_user_id(tg_user_id_a)
+        user_id_b = self.Get_id_from_tg_user_id(tg_user_id_b)
+        time_start = int(time_start*1000)/1000
+        self.Sql(f"INSERT INTO sessions(user_id_a, user_id_b, time_start) VALUES ({user_id_a}, {user_id_b}, to_timestamp({time_start}));")
 
     def Add_log(self, user_id, session_id, message, time_send, type, grade):
-        self.Sql(f"INSERT INTO log(user_id, session_id, message, time_send, type, grade) VALUES ({user_id}, {session_id}, '{message}', {time_send}, '{type}', {grade});")
+        time_send = int(time_send*1000)/1000
+        self.Sql(f"INSERT INTO log(user_id, session_id, message, time_send, type, grade) VALUES ({user_id}, {session_id}, '{message}', to_timestamp({time_send}), '{type}', {grade});")
 
     def Add_points(self, user_id, delta_points, time_event):
-        self.Sql(f"INSERT INTO points(user_id, delta_points, time_event) VALUES ({user_id}, {delta_points}, {time_event});")
+        time_event = int(time_event*1000)/1000
+        self.Sql(f"INSERT INTO points(user_id, delta_points, time_event) VALUES ({user_id}, {delta_points}, to_timestamp({time_event}) );")
 
     # Updates
 
 
 # Debug
 
-# db = DB_binding()
+#import time
+#db = DB_binding()
+
 # b = db.Sql("SELECT * FROM users;")
 # for row in b:
 #     print(row)
+
+# db.Add_queue(439699346, time.time())
 
 # print(db.Get_id_from_tg_user_id(439699346))
