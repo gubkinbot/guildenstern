@@ -22,19 +22,10 @@ Users counts: {users_counts}
     def handler_message(self, tg_user_id, message):
         modified_msg = self.modify_msg(message)
 
-        msg_start = ""
-        msg_end = ""
-
-        print(modified_msg)
-
+        msg = ""
         for row in modified_msg:
-            print(row)
-            print(len(row))
-            print(type(row))
-            
-            msg_start += row[0] + "\n\n"
-            msg_end += row[1] + "\n"
+            msg += row + "\n\n"
         
-        self.send(tg_user_id, msg_start+msg_end)
+        self.send(tg_user_id, msg)
 
     
