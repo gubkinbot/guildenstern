@@ -24,9 +24,14 @@ Users counts: {users_counts}
 
         msg_start = ""
         msg_end = ""
+
+        print(modified_msg)
+
         for row in modified_msg:
             print(row)
+            print(len(row))
             print(type(row))
+            
             msg_start += row[0] + "\n\n"
             msg_end += row[1] + "\n"
         
