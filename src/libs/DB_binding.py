@@ -42,7 +42,7 @@ class DB_binding:
                 res_0 = cursor.fetchall()
             except Exception as e:
                 print(f"Error: sql_query: {sql_query}")
-                print(e)
+                print(f"Error detals: {e}")
                 return None
 
             res = []
@@ -116,11 +116,12 @@ class DB_binding:
 
     def Stop_queue(self, queue_id, time_stop, session_id):
         self.Sql(f"UPDATE queue SET time_stop = to_timestamp({time_stop}), session_id = {session_id} WHERE id = {queue_id};")
+        print("STOP QUEUE:", queue_id)
 
     # def Stop_queue_without_session_id(self, queue_id, time_stop, session_id):
 
     def Stop_session(self, session_id, time_stop, status):
-        self.Sql(f"UPDATE queue SET time_stop = to_timestamp({time_stop}), status = '{status}' WHERE id = {session_id};")
+        self.Sql(f"UPDATE sessions SET time_stop = to_timestamp({time_stop}), status = '{status}' WHERE id = {session_id};")
 
 # Debug
 
