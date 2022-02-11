@@ -79,11 +79,11 @@ class Bot_logic:
             if is_callback_button:
                 # time.sleep(0)
 
-                self.send(tg_user_id_companion, self.modify_msg.process(message))
+                self.send(tg_user_id_companion, message)
                 self.db.Add_log(tg_user_id, session_id, message, time_send, "from_bot", 0)
             else: 
                 self.send(tg_user_id_companion, message)
-                self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
+                self.db.Add_log(tg_user_id, session_id, self.modify_msg.process(message), time_send, "original", 0)
 
                 impudence = self.modify_msg.impudence(message)
                 if impudence:
