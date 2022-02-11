@@ -41,7 +41,9 @@ class DB_binding:
             try:
                 res_0 = cursor.fetchall()
             except Exception as e:
-                if not e == "no results to fetch":
+                for i in range(len(e)):
+                    print(i,e[i])
+                if not e.args == "no results to fetch":
                     print(f"Error: sql_query: {sql_query}")
                     print(f"Error detals: {e}")
                 return None
