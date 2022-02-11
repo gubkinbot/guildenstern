@@ -113,7 +113,7 @@ class Bot_logic:
 
     def cmd_stop(self, tg_user_id):
         time_stemp = int(time.time()*1000)/1000
-        self.stop_queue(tg_user_id, tg_user_id, time_stemp, None)
+        self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL")
         self.stop_session(tg_user_id, time_stemp, "command_stop")
 
     def cmd_info(self, tg_user_id):
