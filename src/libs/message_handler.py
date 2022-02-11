@@ -56,6 +56,25 @@ class MessageHandler:
 
         return self.postprocess(good + bad)
 
+    flag = False # for /test command
+
+    def impudence(self, message, count_message_in_session = 0) -> list:
+        if self.triger_for_show_Anton(message):
+            self.flag = False # for /test command
+
+            res = []
+
+            res.append("первое сообщение от бота")
+            res.append("второе сообщение от бота")
+            res.append("третье сообщение от бота")
+
+            return res
+        else:
+            return None
+
+    def triger_for_show_Anton(self, message):
+        return self.flag # <>
+
     @staticmethod
     def preprocess(question: str) -> str:
         question = re.sub(r'\s+', ' ', question) # удаление дублей в пробелах

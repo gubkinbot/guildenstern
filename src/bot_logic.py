@@ -16,6 +16,7 @@ class Bot_logic:
     send = None # def send(tg_user_id, send_message)
     db = None # DB_binding()
     modify_msg = None # MessageHandler()
+    create_buttons = None # create_buttons()
 
     current_queue = [] # [{'queue_id':0, 'tg_user_id':0, 'time_start':0, 'last_companion': 0}, ...]
     current_sessions = [] # [{'session_id':0 ,'tg_user_id_a': 0, 'tg_user_id_b': 0, 'time_start': 0}, ...]
@@ -41,7 +42,8 @@ class Bot_logic:
             'start': self.cmd_start,
             'stop': self.cmd_stop,
             'search': self.cmd_start,
-            'info': self.cmd_info
+            'info': self.cmd_info,
+            'test': self.cmd_test
         }
 
     # handlers
@@ -49,7 +51,7 @@ class Bot_logic:
     def handler_commands(self, command_name, tg_user_id):
         self.commands[command_name](tg_user_id)
 
-    def handler_message(self, tg_user_id, message):
+    def handler_message(self, tg_user_id, message, is_callback_button = False):
 
         # if message.lower()[:6] == '/start':
         #     self.commands['start'](tg_user_id)
@@ -73,11 +75,22 @@ class Bot_logic:
                 break
             
         if session_id:
-            # time.sleep(0)
-            self.send(tg_user_id_companion, message) # <--- add random put bot message
-            self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
+
+            if is_callback_button:
+                # time.sleep(0)
+
+                self.send(tg_user_id_companion, message)
+                self.db.Add_log(tg_user_id, session_id, message, time_send, "from_bot", 0)
+            else: 
+                self.send(tg_user_id_companion, message)
+                self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
+
+                impudence = self.modify_msg.impudence(message)
+                if impudence:
+                    self.send( tg_user_id_companion, message, eply_markup = self.create_buttons(impudence) )
+
         else:
-            self.send(tg_user_id,  self.modify_msg(message), parse_mode='Markdown')
+            self.send(tg_user_id,  self.modify_msg.process(message), parse_mode='Markdown')
     
     # schedulers
 
@@ -149,6 +162,9 @@ class Bot_logic:
         self.send(tg_user_id,f"Начать - /start\nОстановить - /stop\nБольше информации - /info")
         self.send(tg_user_id,f"Правила: (...)")
         self.send_online(tg_user_id)
+
+    def cmd_test(self, tg_user_id):
+        self.modify_msg.flag = True
 
     # utils
 
