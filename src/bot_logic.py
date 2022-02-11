@@ -139,20 +139,17 @@ class Bot_logic:
 
     def stop_queue(self, tg_user_id_a, tg_user_id_b, time_stemp, session_id):
         
-        print(f"1 - stop_queue() tg_user_id_a = {tg_user_id_a}, tg_user_id_b = {tg_user_id_b}")
-        
+        local_current_queue = self.current_queue
         for user_in_queue in self.current_queue:
-            print(f"2 - stop_queue() tg_user_id = {user_in_queue['tg_user_id']}")
-
-        for user_in_queue in self.current_queue:
-            print(f"3 - stop_queue() tg_user_id = {user_in_queue['tg_user_id']}")
             if user_in_queue['tg_user_id'] == tg_user_id_a or user_in_queue['tg_user_id'] == tg_user_id_b:
-                print(f"4 - stop_queue() queue_id: {user_in_queue['queue_id']}")
                 self.db.Stop_queue(user_in_queue['queue_id'], time_stemp, session_id)
-                self.current_queue.remove(user_in_queue)
-                print(f"5 - stop_queue() queue_id: {user_in_queue['queue_id']}")
+                local_current_queue.remove(user_in_queue)
+
+        self.current_queue = local_current_queue
+
 
     def stop_session(self, tg_user_id, time_stemp, status):
+        local_current_sessions = self.current_sessions
         for session in self.current_sessions:
             if (session['tg_user_id_a'] == tg_user_id or
                 session['tg_user_id_b'] == tg_user_id ):
@@ -162,3 +159,5 @@ class Bot_logic:
                 self.send(session['tg_user_id_b'], '---\nSession stopped.\n---')
 
                 self.current_sessions.remove(session)
+
+        self.current_sessions = local_current_sessions
