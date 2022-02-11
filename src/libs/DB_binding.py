@@ -41,8 +41,9 @@ class DB_binding:
             try:
                 res_0 = cursor.fetchall()
             except Exception as e:
-                print(f"Error: sql_query: {sql_query}")
-                print(f"Error detals: {e}")
+                if not e == "no results to fetch":
+                    print(f"Error: sql_query: {sql_query}")
+                    print(f"Error detals: {e}")
                 return None
 
             res = []
@@ -74,6 +75,11 @@ class DB_binding:
 
     def Get_current_sessions(self):
         return self.Sql(f"SELECT * FROM sessions WHERE time_stop IS NULL;")
+
+    def Get_last_message_timestamp_from_session_id(self, session_id):
+        res = self.sql(f"SELECT id, EXTRACT(epoch FROM time_send) FROM log WHERE session_id = {session_id} ORDER BY EXTRACT(epoch FROM time_send) DESC;")
+        print(res[0])
+        return None if res == [] else res[0]['date_part']
 
     # def Get_current_counts_msg_in_sessions(self):
     #     # return self.Sql("")
@@ -117,9 +123,7 @@ class DB_binding:
     def Stop_queue(self, queue_id, time_stop, session_id):
         self.Sql(f"UPDATE queue SET time_stop = to_timestamp({time_stop}), session_id = {session_id} WHERE id = {queue_id};")
         print("STOP QUEUE:", queue_id)
-
-    # def Stop_queue_without_session_id(self, queue_id, time_stop, session_id):
-
+        
     def Stop_session(self, session_id, time_stop, status):
         self.Sql(f"UPDATE sessions SET time_stop = to_timestamp({time_stop}), status = '{status}' WHERE id = {session_id};")
 

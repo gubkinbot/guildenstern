@@ -114,7 +114,8 @@ class Bot_logic:
                 self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '---\nTimeout search. Please repeat /start\n---')
 
         for session in self.current_sessions:
-            waiting_time = time_stemp - session['time_start']
+            last_message_timestamp = self.db.Get_last_message_timestamp_from_session_id(session['session_id'])
+            waiting_time = time_stemp - last_message_timestamp
             if waiting_time > self.MAX_WAITING_IN_QUEUE:
                 tg_user_id = session['tg_user_id']
                 self.stop_session(tg_user_id, time_stemp, f"Timeout({self.MAX_WAITING_IN_SESSIONS})", '---\nTimeout session. Please repeat /start\n---')
