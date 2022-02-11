@@ -26,7 +26,8 @@ class Bot_logic:
         self.commands = {
             'start': self.cmd_start,
             'stop': self.cmd_stop,
-            'search': self.cmd_search
+            'search': self.cmd_search,
+            'info': self.cmd_info
         }
 
     # handlers
@@ -36,13 +37,13 @@ class Bot_logic:
         self.commands[command_name](tg_user_id)
 
     def handler_message(self, tg_user_id, message):
-        print(message.lower()[:7])
-        if message.lower()[:5] == '/start':
-            self.commands['start'](tg_user_id)
-            return
-        if message.lower()[:5] == '/stop':
-            self.commands['stop'](tg_user_id)
-            return
+
+        # if message.lower()[:6] == '/start':
+        #     self.commands['start'](tg_user_id)
+        #     return
+        # if message.lower()[:5] == '/stop':
+        #     self.commands['stop'](tg_user_id)
+        #     return
 
         time_send = time.time()
         session_id = None
@@ -119,6 +120,9 @@ class Bot_logic:
     def cmd_search(self, tg_user_id):
         self.send(tg_user_id, f"You send command /search")
 
+    def cmd_info(self, tg_user_id):
+        self.send(tg_user_id, f"You send command /info")
+        
     # utils
 
     def add_to_queue(self, tg_user_id, time_stemp):

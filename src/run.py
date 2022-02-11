@@ -34,6 +34,10 @@ def start_message(message):
 def start_message(message):
   logic.handler_commands('search', message.from_user.id)
 
+@bot.message_handler(commands=['info'])
+def start_message(message):
+  logic.handler_commands('info', message.from_user.id)
+
 # askar was here
 
 @bot.message_handler(content_types=["text"])
