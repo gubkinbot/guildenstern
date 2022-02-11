@@ -54,7 +54,8 @@ def handle_text(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-  logic.handler_message(call.id, call.data, callback = True)
+  print(call.id)
+  logic.handler_message(call.id, call.data, is_callback_button = True)
 
 
 # utils
