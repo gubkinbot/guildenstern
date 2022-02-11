@@ -26,14 +26,13 @@ class Bot_logic:
         self.commands = {
             'start': self.cmd_start,
             'stop': self.cmd_stop,
-            'search': self.cmd_search,
+            'search': self.cmd_start,
             'info': self.cmd_info
         }
 
     # handlers
 
     def handler_commands(self, command_name, tg_user_id):
-        print(command_name)
         self.commands[command_name](tg_user_id)
 
     def handler_message(self, tg_user_id, message):
@@ -103,12 +102,11 @@ class Bot_logic:
         time_stemp = int(time.time()*1000)/1000
         if not self.db.Get_id_from_tg_user_id(tg_user_id):
             self.db.Add_user(tg_user_id, 0)
-            self.send(tg_user_id,f"Приветственное сообщение, если здесь впервые.")
+            self.send(tg_user_id,f"Приветственное сообщение, если здесь впервые. \nНачать - /start\bОстановить - /stop\nБольше информации - /info")
+            time.sleep(1)
 
-        # users_counts = len(self.db.Sql("SELECT * FROM users;"))
-        queue_counts = len(self.current_queue)
-        session_counts = len(self.current_sessions)*2
-        self.send(tg_user_id, f'Online users:\nin queue - {queue_counts}\nin sessions - {session_counts}\n')
+        self.send_online(tg_user_id)
+
         self.send(tg_user_id, f'Please wait at least 10 seconds...')
 
         self.add_to_queue(tg_user_id, time_stemp)
@@ -117,13 +115,16 @@ class Bot_logic:
         time_stemp = int(time.time()*1000)/1000
         self.stop_session(tg_user_id, time_stemp, "command_stop")
 
-    def cmd_search(self, tg_user_id):
-        self.send(tg_user_id, f"You send command /search")
-
     def cmd_info(self, tg_user_id):
-        self.send(tg_user_id, f"You send command /info")
-        
+        self.send_online(tg_user_id)
+
     # utils
+
+    def send_online(self, tg_user_id):
+        # users_counts = len(self.db.Sql("SELECT * FROM users;"))
+        queue_counts = len(self.current_queue)
+        session_counts = len(self.current_sessions)*2
+        self.send(tg_user_id, f'Online users:\nin queue - {queue_counts}\nin sessions - {session_counts}\n')
 
     def add_to_queue(self, tg_user_id, time_stemp):
         for user_in_queue in self.current_queue:
