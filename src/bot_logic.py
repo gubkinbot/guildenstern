@@ -1,11 +1,17 @@
 import schedule, time, random
 
 class Bot_logic:
+
     MIN_WAITING_IN_QUEUE = 5
     MAX_WAITING_IN_QUEUE = 60
-    COMPANION_TIME_OUT = 30 # MIN_WAITING_IN_QUEUE < it < MAX_WAITING_IN_QUEUE
-
+    
     MAX_WAITING_IN_SESSIONS = 30
+
+    COMPANION_TIME_OUT = 30 
+    # Предел времи ожидания в очереди, для прошлого собеседника 
+    # (если только они в двоем в очереди, через это время соеденит)
+    # MIN_WAITING_IN_QUEUE < it < MAX_WAITING_IN_QUEUE
+
 
     send = None # def send(tg_user_id, send_message)
     db = None # DB_binding()
@@ -13,6 +19,7 @@ class Bot_logic:
 
     current_queue = [] # [{'queue_id':0, 'tg_user_id':0, 'time_start':0, 'last_companion': 0}, ...]
     current_sessions = [] # [{'session_id':0 ,'tg_user_id_a': 0, 'tg_user_id_b': 0, 'time_start': 0}, ...]
+
 
     def init(self):
         current_queue = self.db.Get_current_queue()
