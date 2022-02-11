@@ -41,7 +41,6 @@ class DB_binding:
             try:
                 res_0 = cursor.fetchall()
             except Exception as e:
-                print(e.args)
                 if not "no results to fetch" in e.args:
                     print(f"Error: sql_query: {sql_query}")
                     print(f"Error detals: {e}")
@@ -79,8 +78,6 @@ class DB_binding:
 
     def Get_last_message_timestamp_from_session_id(self, session_id):
         res = self.Sql(f"SELECT id, EXTRACT(epoch FROM time_send) FROM log WHERE session_id = {session_id} ORDER BY EXTRACT(epoch FROM time_send) DESC;")
-        if not res == []:
-            print(res[0])
         return None if res == [] else res[0]['date_part']
 
     # def Get_current_counts_msg_in_sessions(self):
