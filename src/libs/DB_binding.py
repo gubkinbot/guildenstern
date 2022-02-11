@@ -55,20 +55,20 @@ class DB_binding:
     # Gets
 
     def Get_id_from_tg_user_id(self, tg_user_id):
-        id = self.Sql(f"SELECT id FROM users WHERE tg_user_id = {tg_user_id};")
-        return None if id == [] else id[0]['id']
+        res = self.Sql(f"SELECT id FROM users WHERE tg_user_id = {tg_user_id};")
+        return None if res == [] else res[0]['id']
 
     def Get_tg_user_id_from_id(self, user_id):
-        id = self.Sql(f"SELECT tg_user_id FROM users WHERE id = {user_id};")
-        return None if id == [] else id[0]['tg_user_id']
+        res = self.Sql(f"SELECT tg_user_id FROM users WHERE id = {user_id};")
+        return None if res == [] else res[0]['tg_user_id']
     
     def Get_queue_id_from_time_start(self, time_start):
-        id = self.Sql(f"SELECT id, EXTRACT(epoch FROM time_start) FROM queue WHERE {time_start} = EXTRACT(epoch FROM time_start);")
-        return None if id == [] else id[0]['id']
+        res = self.Sql(f"SELECT id, EXTRACT(epoch FROM time_start) FROM queue WHERE {time_start} = EXTRACT(epoch FROM time_start);")
+        return None if res == [] else res[0]['id']
 
     def Get_session_id_from_time_start(self, time_start):
-        id = self.Sql(f"SELECT id, EXTRACT(epoch FROM time_start) FROM sessions WHERE {time_start} = EXTRACT(epoch FROM time_start);")
-        return None if id == [] else id[0]['id']
+        res = self.Sql(f"SELECT id, EXTRACT(epoch FROM time_start) FROM sessions WHERE {time_start} = EXTRACT(epoch FROM time_start);")
+        return None if res == [] else res[0]['id']
 
     def Get_current_queue(self):
         return self.Sql(f"SELECT * FROM queue WHERE time_stop IS NULL;")
@@ -122,7 +122,6 @@ class DB_binding:
 
     def Stop_queue(self, queue_id, time_stop, session_id):
         self.Sql(f"UPDATE queue SET time_stop = to_timestamp({time_stop}), session_id = {session_id} WHERE id = {queue_id};")
-        print("STOP QUEUE:", queue_id)
         
     def Stop_session(self, session_id, time_stop, status):
         self.Sql(f"UPDATE sessions SET time_stop = to_timestamp({time_stop}), status = '{status}' WHERE id = {session_id};")
