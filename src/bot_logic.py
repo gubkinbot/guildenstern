@@ -98,7 +98,7 @@ class Bot_logic:
 
         else:
             self.send(tg_user_id,  self.modify_msg.process(message), parse_mode='Markdown')
-            self.send(tg_user_id,  self.modify_msg.fuckoff(), parse_mode='Markdown')
+            self.send(tg_user_id,  self.modify_msg.fuckoff, parse_mode='Markdown')
     
     # schedulers
 
