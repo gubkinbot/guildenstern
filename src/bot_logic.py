@@ -89,7 +89,7 @@ class Bot_logic:
                 # markup.add(InlineKeyboardButton('1', callback_data='1_'), InlineKeyboardButton('2', callback_data='2_'), InlineKeyboardButton('3', callback_data='3_'))
                 # self.send(tg_user_id_companion, self.modify_msg.process(message), parse_mode='Markdown', reply_markup=markup)
                 self.send(tg_user_id_companion, self.modify_msg.process(message), parse_mode='Markdown')
-                self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
+                # self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
                 self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
 
                 impudence = self.modify_msg.impudence(message)
