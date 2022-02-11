@@ -70,15 +70,17 @@ class Bot_logic:
         will_be_connection = {} # {'tg_user_id_a': ['tg_user_id_b','tg_user_id_c'], ... }
 
         for user_a in self.current_queue:
-            waiting_time = time_stemp - user_a['time_start']
-            if waiting_time > 10:
+            waiting_time_a = time_stemp - user_a['time_start']
+            if waiting_time_a > 10:
                 for user_b in self.current_queue:
                     id_a = user_a['tg_user_id']
                     id_b = user_b['tg_user_id']
+                    waiting_time_b = time_stemp - user_b['time_start']
 
                     if ((id_a != id_b) and 
-                        (user_a['last_companion'] != id_b or
-                        waiting_time > 30 ) and
+                        (user_a['last_companion'] != id_b or 
+                         waiting_time_a > 30 ) and
+                        (waiting_time_b > 10) and
                         ( not will_be_connection.get(id_b) ) ):
 
                         if not will_be_connection.get(id_a):
@@ -136,8 +138,10 @@ class Bot_logic:
         self.stop_queue(tg_user_id_a, tg_user_id_b, time_stemp, session_id)
 
     def stop_queue(self, tg_user_id_a, tg_user_id_b, time_stemp, session_id):
+        
         for user_in_queue in self.current_queue:
-            if user_in_queue['tg_user_id'] == tg_user_id_a or user_in_queue['tg_user_id'] ==  tg_user_id_b:
+            if user_in_queue['tg_user_id'] == tg_user_id_a or user_in_queue['tg_user_id'] == tg_user_id_b:
+                print(f"stop_queue() queue_id: {user_in_queue['queue_id']}")
                 self.db.Stop_queue(user_in_queue['queue_id'], time_stemp, session_id)
                 self.current_queue.remove(user_in_queue)
 
