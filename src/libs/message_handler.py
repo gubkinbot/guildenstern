@@ -88,8 +88,6 @@ class MessageHandler:
     @staticmethod
     def preprocess(question: str) -> str:
         question = re.sub(r'\s+', ' ', question) # удаление дублей в пробелах
-        question = re.sub(r'!+', '!', question) # удаление дублей в пробелах
-        question = re.sub(r')+', ')', question) # удаление дублей в пробелах
         question = re.sub(r'(?<=[.,!?:;])(?=[^\s])', r' ', question) # вставка пробелов после знаков препинания
         question = re.sub('\s+(?=[,.!?])', '', question) # удаление пробелов перед знаками препинания
         # пока так, когда появится история сообщений, надо будет переделать
