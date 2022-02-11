@@ -25,7 +25,8 @@ class Bot_logic:
 
         self.commands = {
             'start': self.cmd_start,
-            'stop': self.cmd_stop
+            'stop': self.cmd_stop,
+            'search': self.cmd_search
         }
 
     # handlers
@@ -112,6 +113,9 @@ class Bot_logic:
     def cmd_stop(self, tg_user_id):
         time_stemp = int(time.time()*1000)/1000
         self.stop_session(tg_user_id, time_stemp, "command_stop")
+
+    def cmd_search(self, tg_user_id):
+        self.send(tg_user_id, f"You send command /search")
 
     # utils
 
