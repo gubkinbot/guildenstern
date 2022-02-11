@@ -144,7 +144,6 @@ class Bot_logic:
 
                 self.current_queue.remove(user_in_queue)
 
-        self.current_queue.remove([])
     def stop_session(self, tg_user_id, time_stemp, status):
         for session in self.current_sessions[:]:
             if (session['tg_user_id_a'] == tg_user_id or
