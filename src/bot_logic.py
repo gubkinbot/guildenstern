@@ -120,7 +120,7 @@ class Bot_logic:
         self.stop_session(tg_user_id, time_stemp, "command_stop")
 
     def cmd_info(self, tg_user_id):
-        self.send(tg_user_id,f"Начать - /start\bОстановить - /stop\nБольше информации - /info")
+        self.send(tg_user_id,f"Начать - /start\nОстановить - /stop\nБольше информации - /info")
         self.send(tg_user_id,f"Правила: (...)")
         self.send_online(tg_user_id)
 
