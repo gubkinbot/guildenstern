@@ -113,7 +113,7 @@ class Bot_logic:
 
     def cmd_stop(self, tg_user_id):
         time_stemp = int(time.time()*1000)/1000
-        self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL")
+        self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '---\nStop search.\n---')
         self.stop_session(tg_user_id, time_stemp, "command_stop")
 
     def cmd_info(self, tg_user_id):
@@ -154,15 +154,15 @@ class Bot_logic:
         session_id = self.db.Get_session_id_from_time_start(time_stemp)
         self.current_sessions.append({'session_id': session_id, 'tg_user_id_a': tg_user_id_a, 'tg_user_id_b': tg_user_id_b, 'time_start': time_stemp})
         
-        self.stop_queue(tg_user_id_a, tg_user_id_b, time_stemp, session_id)
+        self.stop_queue(tg_user_id_a, tg_user_id_b, time_stemp, session_id, '---\nCompanion found!\nPlease, send message...\n---')
 
-    def stop_queue(self, tg_user_id_a, tg_user_id_b, time_stemp, session_id):
+    def stop_queue(self, tg_user_id_a, tg_user_id_b, time_stemp, session_id, bot_message):
         for user_in_queue in self.current_queue[:]:
             if ((user_in_queue['tg_user_id'] == tg_user_id_a) or 
                 (user_in_queue['tg_user_id'] == tg_user_id_b)):
                 self.db.Stop_queue(user_in_queue['queue_id'], time_stemp, session_id)
                 
-                self.send(user_in_queue['tg_user_id'], '---\nCompanion found!\nPlease, send message...\n---')
+                self.send(user_in_queue['tg_user_id'], bot_message)
 
                 self.current_queue.remove(user_in_queue)
 
