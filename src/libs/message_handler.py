@@ -85,7 +85,7 @@ class MessageHandler:
         go = ['канай отсюда', 'лучше бы ты на салфетке остался', 'убейся', 'заройся', 'отдайся бегемоту', 'завернись в лаваш']
         return random.choice(hi) + ', ' + random.choice(mr) + ', ' + random.choice(go)
 
-    @staticmethod
+    # @staticmethod
     def preprocess(self, question: str) -> str:
         question = re.sub(r'\s+', ' ', question) # удаление дублей в пробелах
         question = re.sub(r'(?<=[.,!?:;])(?=[^\s])', r' ', question) # вставка пробелов после знаков препинания
