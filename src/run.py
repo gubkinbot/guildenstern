@@ -42,7 +42,7 @@ def start_message(message):
 
 @bot.message_handler(commands=['test'])
 def start_message(message):
-  logic.handler_commands('info', message.from_user.id)
+  logic.handler_commands('test', message.from_user.id)
 
 # askar was here
 
