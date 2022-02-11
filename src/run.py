@@ -26,6 +26,14 @@ logic.init()
 def start_message(message):
   logic.handler_commands('start', message.from_user.id)
 
+@bot.message_handler(commands=['stop'])
+def start_message(message):
+  logic.handler_commands('stop', message.from_user.id)
+
+@bot.message_handler(commands=['search'])
+def start_message(message):
+  logic.handler_commands('search', message.from_user.id)
+
 # askar was here
 
 @bot.message_handler(content_types=["text"])
