@@ -119,7 +119,7 @@ class Bot_logic:
                 break
             waiting_time = time_stemp - last_message_timestamp
             if waiting_time > self.MAX_WAITING_IN_QUEUE:
-                tg_user_id = session['tg_user_id']
+                tg_user_id = session['tg_user_id_a']
                 self.stop_session(tg_user_id, time_stemp, f"Timeout({self.MAX_WAITING_IN_SESSIONS})", '---\nTimeout session. Please repeat /start\n---')
 
     # commands
