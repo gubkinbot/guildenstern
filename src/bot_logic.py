@@ -109,10 +109,6 @@ class Bot_logic:
             self.send(tg_user_id,f"Приветственное сообщение, если здесь впервые. \nНачать - /start\bОстановить - /stop\nБольше информации - /info")
             time.sleep(1)
 
-        self.send_online(tg_user_id)
-
-        self.send(tg_user_id, f'Please wait at least {self.MIN_WAITING_IN_QUEUE} seconds...')
-
         self.add_to_queue(tg_user_id, time_stemp)
 
     def cmd_stop(self, tg_user_id):
@@ -137,6 +133,14 @@ class Bot_logic:
         for user_in_queue in self.current_queue:
             if user_in_queue['tg_user_id'] == tg_user_id:
                 return
+
+        for sessions in self.current_sessions:
+            if (sessions['tg_user_id_a'] == tg_user_id or
+                sessions['tg_user_id_b'] == tg_user_id):
+                return
+
+        self.send_online(tg_user_id)
+        self.send(tg_user_id, f'Please wait at least {self.MIN_WAITING_IN_QUEUE} seconds...')
 
         self.db.Add_queue(tg_user_id, time_stemp)
 
