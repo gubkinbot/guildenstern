@@ -54,8 +54,9 @@ def handle_text(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-  print(call.id)
-  logic.handler_message(call.id, call.data, is_callback_button = True)
+  print(call.id, call.message.chat.id, call.data)
+  bot.answer_callback_query(call.id, f"Press kekw: {call.data}")
+  # logic.handler_message(call.id, call.data, is_callback_button = True)
 
 
 # utils
