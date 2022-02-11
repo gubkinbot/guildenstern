@@ -32,9 +32,11 @@ class Bot_logic:
     # handlers
 
     def handler_commands(self, command_name, tg_user_id):
+        print(command_name)
         self.commands[command_name](tg_user_id)
 
     def handler_message(self, tg_user_id, message):
+        print(message.lower()[:7])
         if message.lower()[:5] == '/start':
             self.commands['start'](tg_user_id)
             return
