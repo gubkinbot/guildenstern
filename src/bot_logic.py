@@ -1,8 +1,11 @@
 import schedule, time, random
 
 class Bot_logic:
-    MIN_WAITING_IN_QUEUE = 10
-    COMPANION_TIME_OUT = 30
+    MIN_WAITING_IN_QUEUE = 5
+    MAX_WAITING_IN_QUEUE = 60
+    COMPANION_TIME_OUT = 30 # MIN_WAITING_IN_QUEUE < it < MAX_WAITING_IN_QUEUE
+
+    MAX_WAITING_IN_SESSIONS = 30
 
     send = None # def send(tg_user_id, send_message)
     db = None # DB_binding()
@@ -25,6 +28,7 @@ class Bot_logic:
             self.current_sessions.append({'session_id': v["id"], 'tg_user_id_a': tg_user_id_a, 'tg_user_id_b': tg_user_id_b, 'time_start': v['time_start'].timestamp()})
 
         schedule.every(5).seconds.do(self.queue_schedule)
+        schedule.every(10).seconds.do(self.timeouts_schedule)
 
         self.commands = {
             'start': self.cmd_start,
@@ -100,6 +104,21 @@ class Bot_logic:
 
             self.add_to_sessions(tg_user_id_a, tg_user_id_b, time_stemp)
 
+    def timeouts_schedule(self):
+        time_stemp = int(time.time()*1000)/1000
+
+        for user_in_queue in self.current_queue:
+            waiting_time = time_stemp - user_in_queue['time_start']
+            if waiting_time > self.MAX_WAITING_IN_QUEUE:
+                tg_user_id = user_in_queue['tg_user_id']
+                self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '---\nTimeout search. Please repeat /start\n---')
+
+        for session in self.current_sessions:
+            waiting_time = time_stemp - session['time_start']
+            if waiting_time > self.MAX_WAITING_IN_QUEUE:
+                tg_user_id = session['tg_user_id']
+                self.stop_session(tg_user_id, time_stemp, f"Timeout({self.MAX_WAITING_IN_SESSIONS})", '---\nTimeout session. Please repeat /start\n---')
+
     # commands
 
     def cmd_start(self, tg_user_id):
@@ -113,8 +132,8 @@ class Bot_logic:
 
     def cmd_stop(self, tg_user_id):
         time_stemp = int(time.time()*1000)/1000
-        self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '---\nStop search.\n---')
-        self.stop_session(tg_user_id, time_stemp, "command_stop")
+        self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '---\nSearch stopped.\n---')
+        self.stop_session(tg_user_id, time_stemp, "command_stop", '---\nSession stopped.\n---')
 
     def cmd_info(self, tg_user_id):
         self.send(tg_user_id,f"Начать - /start\nОстановить - /stop\nБольше информации - /info")
@@ -137,7 +156,7 @@ class Bot_logic:
         for sessions in self.current_sessions:
             if (sessions['tg_user_id_a'] == tg_user_id or
                 sessions['tg_user_id_b'] == tg_user_id):
-                self.send(tg_user_id, "---\nYou are in sessions, please write /stop and repeate /start.\n---")
+                self.send(tg_user_id, "---\nYou are in session, please write /stop and repeate /start.\n---")
                 return
 
         self.send_online(tg_user_id)
@@ -167,13 +186,13 @@ class Bot_logic:
 
                 self.current_queue.remove(user_in_queue)
 
-    def stop_session(self, tg_user_id, time_stemp, status):
+    def stop_session(self, tg_user_id, time_stemp, status, bot_message):
         for session in self.current_sessions[:]:
             if (session['tg_user_id_a'] == tg_user_id or
                 session['tg_user_id_b'] == tg_user_id ):
                 self.db.Stop_session(session['session_id'], time_stemp, status)
                 
-                self.send(session['tg_user_id_a'], '---\nSession stopped.\n---')
-                self.send(session['tg_user_id_b'], '---\nSession stopped.\n---')
+                self.send(session['tg_user_id_a'], bot_message)
+                self.send(session['tg_user_id_b'], bot_message)
 
                 self.current_sessions.remove(session)
