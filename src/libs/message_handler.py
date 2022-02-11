@@ -1,6 +1,8 @@
 from Levenshtein import distance
 from nltk import sent_tokenize
 import re
+import random
+
 if __name__ == '__main__':
     from models.simple_bot import MLChitChat
 else:
@@ -57,6 +59,8 @@ class MessageHandler:
         return self.postprocess(good + bad)
 
     flag = False # for /test command
+    
+    
 
     def impudence(self, message, count_message_in_session = 0) -> list:
         if self.triger_for_show_Anton(message):
@@ -74,6 +78,12 @@ class MessageHandler:
 
     def triger_for_show_Anton(self, message):
         return self.flag # <>
+    
+    def fuckoff():
+        hi = ['слышь', 'так', 'а ну-ка', 'слушай сюда', 'внимание']
+        mr = ['ушлепыш', 'натоптыш', 'мазоль', 'отрыжка', 'макака', 'бот', 'собака', 'тупица']
+        go = ['канай отсюда', 'лучше бы ты на салфетке остался', 'убейся', 'заройся', 'отдайся бегемоту', 'завернись в лаваш']
+        return random.choice(hi) + ', ' + random.choice(mr) + ', ' + random.choice(go)
 
     @staticmethod
     def preprocess(question: str) -> str:
