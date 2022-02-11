@@ -1,4 +1,6 @@
 import schedule, time, random
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 
 class Bot_logic:
 
