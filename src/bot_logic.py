@@ -87,7 +87,7 @@ class Bot_logic:
 
                 impudence = self.modify_msg.impudence(message)
                 if impudence:
-                    self.send( tg_user_id_companion, message, eply_markup = self.create_buttons(impudence) )
+                    self.send( tg_user_id_companion, message, reply_markup = self.create_buttons(impudence) )
 
         else:
             self.send(tg_user_id,  self.modify_msg.process(message), parse_mode='Markdown')
