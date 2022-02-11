@@ -137,6 +137,7 @@ class Bot_logic:
         for sessions in self.current_sessions:
             if (sessions['tg_user_id_a'] == tg_user_id or
                 sessions['tg_user_id_b'] == tg_user_id):
+                self.send(tg_user_id, "---\nYou are in sessions, please write /stop and repeate /start.\n---")
                 return
 
         self.send_online(tg_user_id)
