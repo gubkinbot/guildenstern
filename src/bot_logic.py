@@ -115,6 +115,8 @@ class Bot_logic:
 
         for session in self.current_sessions:
             last_message_timestamp = self.db.Get_last_message_timestamp_from_session_id(session['session_id'])
+            if not last_message_timestamp:
+                break
             waiting_time = time_stemp - last_message_timestamp
             if waiting_time > self.MAX_WAITING_IN_QUEUE:
                 tg_user_id = session['tg_user_id']
