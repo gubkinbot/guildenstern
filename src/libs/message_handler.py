@@ -64,9 +64,9 @@ class MessageHandler:
 
             res = []
 
-            res.append("первое сообщение от бота")
-            res.append("второе сообщение от бота")
-            res.append("третье сообщение от бота")
+            res.append(11)
+            res.append(22)
+            res.append(33)
 
             return res
         else:
