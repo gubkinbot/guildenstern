@@ -85,8 +85,8 @@ class Bot_logic:
 
                     if ((id_a != id_b) and 
                         (user_a['last_companion'] != id_b or 
-                         waiting_time_a > self.COMPANION_TIME_OUT and
-                         waiting_time_b > self.COMPANION_TIME_OUT) and
+                        (waiting_time_a > self.COMPANION_TIME_OUT and
+                         waiting_time_b > self.COMPANION_TIME_OUT)) and
                         (waiting_time_b > self.MIN_WAITING_IN_QUEUE) and
                         ( not will_be_connection.get(id_b) ) ):
 
@@ -117,6 +117,7 @@ class Bot_logic:
 
     def cmd_stop(self, tg_user_id):
         time_stemp = int(time.time()*1000)/1000
+        self.stop_queue(tg_user_id, tg_user_id, time_stemp, None)
         self.stop_session(tg_user_id, time_stemp, "command_stop")
 
     def cmd_info(self, tg_user_id):
