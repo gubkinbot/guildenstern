@@ -1,4 +1,5 @@
 import schedule, time, random
+from libs.models.nickname_generator import generate_nickname
 # from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
@@ -166,7 +167,14 @@ class Bot_logic:
     def cmd_start(self, tg_user_id):
         time_stemp = int(time.time()*1000)/1000
         if not self.db.Get_id_from_tg_user_id(tg_user_id):
+            # сюда надо пихнуть выгрузку уже существующих ников из базы
+            #names = self.db.some_method()
+            names = []
+            nick = generate_nickname()
+            while nick in names:
+                nick = generate_nickname()
             self.db.Add_user(tg_user_id, 0)
+            # сюда впихнуть сохранение никнейма в базу
             self.send(tg_user_id,f"Приветственное сообщение, если здесь впервые. \nНачать - /start\bОстановить - /stop\nБольше информации - /info")
             time.sleep(1)
 
