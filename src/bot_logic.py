@@ -103,7 +103,7 @@ class Bot_logic:
                     msg_for_select = f"---\nPlease select message:"
                     for k, v in enumerate(self.impudence):
                         msg_for_select += f"\n\n{k+1} - " + v
-                    msg_for_select += f"---"
+                    msg_for_select += f"\n---"
 
                     msg = self.send( tg_user_id_companion, msg_for_select, reply_markup = self.create_buttons(self.impudence))
                     self.impudence_msg_id = msg.message_id
