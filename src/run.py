@@ -19,7 +19,7 @@ logic = Bot_logic()
 logic.db = db
 logic.modify_msg = handler
 logic.send = bot.send_message
-logic.send = bot.delete_message
+logic.delete = bot.delete_message
 
 logic.init()
 
