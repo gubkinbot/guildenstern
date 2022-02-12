@@ -56,7 +56,7 @@ def handle_text(message):
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
   print(f"{call.id}, {call.message.chat.id}, {call.data}\n")
-  bot.answer_callback_query(call.id, f"You send: {call.data}")
+  bot.answer_callback_query(call.id, f"")
   logic.handler_message(call.message.chat.id, call.data, is_callback_button = True)
 
 
