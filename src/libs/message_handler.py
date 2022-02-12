@@ -85,7 +85,7 @@ class MessageHandler:
             return None
 
     def triger_for_show_Anton(self, message):
-        return self.flag # <>
+        return random.randint(1, 5) == 1 or self.flag # <>
     
     def fuckoff(self):
         hi = ['слышь', 'так', 'а ну-ка', 'слушай сюда', 'внимание']
