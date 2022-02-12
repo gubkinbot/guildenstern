@@ -12,6 +12,14 @@ else:
 class MessageHandler:
     def __init__(self) -> None:
         self.dialog_model = MLChitChat()
+    
+    # обработка сообщений. решение, что, кому и как отправлять
+    def analysis(message):
+        return None
+    
+    # чистка сообщений, приведение к одному виду
+    def normalization(text):
+        return None
 
     def process(self, question):
         question = self.preprocess(question)
