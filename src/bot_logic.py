@@ -83,7 +83,7 @@ class Bot_logic:
 
             if is_callback_button:
                 # time.sleep(0)
-                # self.delete(tg_user_id, self.impudence_msg_id)
+                self.delete(tg_user_id, self.impudence_msg_id)
                 impudence_msg = self.impudence[int(message)]
                 self.send(tg_user_id, f"---\nYou send:\n {impudence_msg}\n---")
                 self.send(tg_user_id_companion, impudence_msg)
@@ -105,7 +105,7 @@ class Bot_logic:
                         msg_for_select += f"\n\n{k+1} - " + v
                     msg_for_select += f"---"
 
-                    msg = self.send( tg_user_id_companion, msg_for_select, reply_markup = self.create_buttons(impudence)).message_id
+                    msg = self.send( tg_user_id_companion, msg_for_select, reply_markup = self.create_buttons(self.impudence))
                     self.impudence_msg_id = msg.message_id
         else:
             self.send(tg_user_id,  self.modify_msg.process(message), parse_mode='Markdown')
