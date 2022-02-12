@@ -20,6 +20,7 @@ logic.db = db
 logic.modify_msg = handler
 logic.send = bot.send_message
 logic.delete = bot.delete_message
+logic.edit = bot.edit_message_text
 
 logic.init()
 
@@ -62,10 +63,10 @@ def callback_query(call):
 
 # utils
 
-def create_buttons(arr: list):
+def create_buttons(arr_text_buttons: list, context: str):
   buttons = types.InlineKeyboardMarkup()
-  buttons.row_width = len(arr)
-  row = [types.InlineKeyboardButton(str(k+1), callback_data=str(k)) for k, v in enumerate(arr)]
+  buttons.row_width = len(arr_text_buttons)
+  row = [types.InlineKeyboardButton(v, callback_data=str(k)+";"+context) for k, v in enumerate(arr_text_buttons)]
   buttons.add(*row)
   return buttons
 

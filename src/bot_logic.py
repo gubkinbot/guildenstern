@@ -5,8 +5,8 @@ from libs.models.nickname_generator import generate_nickname
 
 class Bot_logic:
 
-    MIN_WAITING_IN_QUEUE = 5
-    MAX_WAITING_IN_QUEUE = 60
+    MIN_WAITING_IN_QUEUE = 1
+    MAX_WAITING_IN_QUEUE = 600
     
     MAX_WAITING_IN_SESSIONS = 30
 
@@ -57,6 +57,7 @@ class Bot_logic:
 
 
     impudence = [] # [{'session_id': 0, 'message_id': 0, 'arr': []}]
+    is_bot = [] # [{'session_id': 0, 'message_id': 0, 'text': "", 'time_send': 0}]
 
     def handler_message(self, tg_user_id, message, is_callback_button = False):
 
@@ -67,7 +68,7 @@ class Bot_logic:
         #     self.commands['stop'](tg_user_id)
         #     return
 
-        time_send = time.time()
+        time_send = int(time.time()*1000)/1000
         session_id = None
         tg_user_id_companion = None
 
@@ -85,27 +86,65 @@ class Bot_logic:
 
             if is_callback_button:
                 # time.sleep(0)
-                selected_id = int(message)
-                impud = {}
-                for v in self.impudence[:]:
-                    if v['session_id'] == session_id:
-                        impud = v
-                        break
-                
-                self.delete(tg_user_id, impud['message_id'])
-                impudence_msg = impud['arr'][selected_id]
-                self.send(tg_user_id, f"---\nYou send:\n {impudence_msg}\n---")
-                self.send(tg_user_id_companion, impudence_msg)
-                self.db.Add_log(tg_user_id, session_id, impudence_msg, time_send, "from_bot", 0)
 
-                self.impudence.remove(impud)
+                data = message.split(';')
+                selected_id = data[0]
+
+                if data[1] == 'impudence':
+                    impud = {}
+                    for v in self.impudence[:]:
+                        if v['session_id'] == session_id:
+                            impud = v
+                            break
+                    
+                    self.delete(tg_user_id, impud['message_id'])
+                    impudence_msg = impud['arr'][selected_id]
+                    self.send(tg_user_id, f"---\nYou send:\n {impudence_msg}\n---")
+                    self.send(tg_user_id_companion, impudence_msg)
+                    self.db.Add_log(tg_user_id, session_id, impudence_msg, time_send, "from_bot", 0)
+
+                    self.impudence.remove(impud)
+
+                if data[1] == 'is_bot':
+                    detected_bot = {}
+                    for v in self.is_bot[:]:
+                        if v['tg_user_id'] == tg_user_id:
+                            detected_bot = v
+                            break
+                    
+                    #print(f"delete buttons: {detected_bot['tg_user_id']}, {tg_user_id}, {detected_bot['message_id']}, {detected_bot['text']}")
+
+                    self.edit(chat_id = tg_user_id, message_id = detected_bot['message_id'], text = detected_bot['text'])
+                    #self.db.Edit_log() # change grade <>
+
+                    self.is_bot.remove(detected_bot)
             else: 
                 # markup = InlineKeyboardMarkup()
                 # markup.row_width = 3
                 # markup.add(InlineKeyboardButton('1', callback_data='1_'), InlineKeyboardButton('2', callback_data='2_'), InlineKeyboardButton('3', callback_data='3_'))
                 # self.send(tg_user_id_companion, self.modify_msg.process(message), parse_mode='Markdown', reply_markup=markup)
+                
+                #
 
-                self.send(tg_user_id_companion, self.modify_msg.preprocess(message), parse_mode='Markdown')
+                detected_bot = {}
+
+                for v in self.is_bot[:]:
+                    if v['tg_user_id'] == tg_user_id_companion:
+                        detected_bot = v
+                        break
+
+                if detected_bot != {}:
+                    self.edit(chat_id = tg_user_id_companion, message_id = detected_bot['message_id'], text = detected_bot['text'])
+                    self.is_bot.remove(detected_bot)  
+
+                #   
+                
+                send_message = self.modify_msg.preprocess(message)
+                msg = self.send(tg_user_id_companion, send_message, parse_mode='Markdown', reply_markup = self.create_buttons(['🤖'], "is_bot"))
+                self.is_bot.append({'tg_user_id': tg_user_id_companion, 'message_id': msg.message_id, 'text': send_message, 'time_send': time_send})
+                
+                #print(f"send buttons: {session_id}, {tg_user_id_companion}, {msg.message_id}, {send_message}")
+                
                 # self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
                 self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
     
@@ -117,7 +156,7 @@ class Bot_logic:
                         msg_for_select += f"\n\n{k+1} - " + v
                     msg_for_select += f"\n---"
 
-                    msg = self.send( tg_user_id_companion, msg_for_select, reply_markup = self.create_buttons(impudence))
+                    msg = self.send( tg_user_id_companion, msg_for_select, reply_markup = self.create_buttons(['1','2','3'], "impudence"))
                     self.impudence.append({'session_id': session_id, 'message_id': msg.message_id, 'arr': impudence})
         else:
             self.send(tg_user_id,  self.modify_msg.process(message), parse_mode='Markdown')
