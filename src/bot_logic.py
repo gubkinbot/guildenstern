@@ -116,7 +116,7 @@ class Bot_logic:
                         msg_for_select += f"\n\n{k+1} - " + v
                     msg_for_select += f"\n---"
 
-                    msg = self.send( tg_user_id_companion, msg_for_select, reply_markup = self.create_buttons(self.impudence))
+                    msg = self.send( tg_user_id_companion, msg_for_select, reply_markup = self.create_buttons(impudence))
                     self.impudence.append({'session_id': session_id, 'message_id': msg.message_id, 'arr': impudence})
         else:
             self.send(tg_user_id,  self.modify_msg.process(message), parse_mode='Markdown')
