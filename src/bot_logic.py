@@ -54,7 +54,8 @@ class Bot_logic:
     def handler_commands(self, command_name, tg_user_id):
         self.commands[command_name](tg_user_id)
 
-    impudence_msg_id = 0
+
+    impudence = [] # [{'session_id': 0, 'message_id': 0, 'arr': []}]
 
     def handler_message(self, tg_user_id, message, is_callback_button = False):
 
@@ -83,11 +84,20 @@ class Bot_logic:
 
             if is_callback_button:
                 # time.sleep(0)
-                self.delete(tg_user_id, self.impudence_msg_id)
-                impudence_msg = self.impudence[int(message)]
+                selected_id = int(message)
+                impud = {}
+                for v in self.impudence[:]:
+                    if v['session_id'] == session_id:
+                        impud = v
+                        break
+                
+                self.delete(tg_user_id, impud['message_id'])
+                impudence_msg = impud['arr'][selected_id]
                 self.send(tg_user_id, f"---\nYou send:\n {impudence_msg}\n---")
                 self.send(tg_user_id_companion, impudence_msg)
                 self.db.Add_log(tg_user_id, session_id, impudence_msg, time_send, "from_bot", 0)
+
+                self.impudence.remove(impud)
             else: 
                 # markup = InlineKeyboardMarkup()
                 # markup.row_width = 3
@@ -97,16 +107,17 @@ class Bot_logic:
                 self.send(tg_user_id_companion, self.modify_msg.preprocess(message), parse_mode='Markdown')
                 # self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
                 self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
-
-                self.impudence = self.modify_msg.impudence(message)
-                if self.impudence:
+    
+                impudence = self.modify_msg.impudence(message)
+                if impudence:
+                    
                     msg_for_select = f"---\nPlease select message:"
-                    for k, v in enumerate(self.impudence):
+                    for k, v in enumerate(impudence):
                         msg_for_select += f"\n\n{k+1} - " + v
                     msg_for_select += f"\n---"
 
                     msg = self.send( tg_user_id_companion, msg_for_select, reply_markup = self.create_buttons(self.impudence))
-                    self.impudence_msg_id = msg.message_id
+                    self.impudence.append({'session_id': session_id, 'message_id': msg.message_id, 'arr': impudence})
         else:
             self.send(tg_user_id,  self.modify_msg.process(message), parse_mode='Markdown')
             self.send(tg_user_id,  self.modify_msg.fuckoff(), parse_mode='Markdown')
