@@ -54,17 +54,18 @@ def handle_text(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-  print(call.id, call.message.chat.id, call.data)
-  bot.answer_callback_query(call.id, f"Press kekw: {call.data}")
-  # logic.handler_message(call.id, call.data, is_callback_button = True)
+  print(f"{call.id}, {call.message.chat.id}, {call.data}\n")
+  bot.answer_callback_query(call.id, f"You send: {call.data}")
+  logic.handler_message(call.message.chat.id, call.data, is_callback_button = True)
 
 
 # utils
 
 def create_buttons(arr: list):
   buttons = types.InlineKeyboardMarkup()
-  for k, v in enumerate(arr):
-    buttons.add( types.InlineKeyboardButton(v, callback_data=str(k)) )
+  buttons.row_width = len(arr)
+  row = [types.InlineKeyboardButton(k, callback_data=str(v)) for k, v in enumerate(arr)]
+  buttons.add(*row)
   return buttons
 
 logic.create_buttons = create_buttons
