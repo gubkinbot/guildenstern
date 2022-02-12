@@ -67,10 +67,10 @@ class MessageHandler:
             self.flag = False # for /test command
 
             res = []
-
-            res.append(11)
-            res.append(22)
-            res.append(33)
+            
+            model_msg = self.dialog_model(message)
+            for row in model_msg:
+                row.append(row[0])
 
             return res
         else:

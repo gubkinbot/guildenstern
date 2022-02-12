@@ -16,6 +16,7 @@ class Bot_logic:
 
 
     send = None # def send(tg_user_id, send_message)
+    delete = None # def send(tg_user_id, message_id)
     db = None # DB_binding()
     modify_msg = None # MessageHandler()
     create_buttons = None # create_buttons()
@@ -53,6 +54,8 @@ class Bot_logic:
     def handler_commands(self, command_name, tg_user_id):
         self.commands[command_name](tg_user_id)
 
+    impudence_msg_id = 0
+
     def handler_message(self, tg_user_id, message, is_callback_button = False):
 
         # if message.lower()[:6] == '/start':
@@ -80,6 +83,7 @@ class Bot_logic:
 
             if is_callback_button:
                 # time.sleep(0)
+                self.delete(tg_user_id, self.impudence_msg_id)
                 self.send(tg_user_id, f"---\nYou send:\n {message}\n---")
                 self.send(tg_user_id_companion, message)
                 self.db.Add_log(tg_user_id, session_id, message, time_send, "from_bot", 0)
@@ -95,8 +99,13 @@ class Bot_logic:
 
                 impudence = self.modify_msg.impudence(message)
                 if impudence:
-                    self.send( tg_user_id_companion, "тут список?", reply_markup = self.create_buttons(impudence))
+                    msg_for_select = f"---\nPlease select message:\n\n"
+                    for k, v in enumerate(impudence):
+                        msg_for_select += f"{k+1} - " + v + "\n\n"
+                    msg_for_select += f"\n---"
 
+                    msg = self.send( tg_user_id_companion, msg_for_select, reply_markup = self.create_buttons(impudence)).message_id
+                    self.impudence_msg_id = msg.message_id
         else:
             self.send(tg_user_id,  self.modify_msg.process(message), parse_mode='Markdown')
             self.send(tg_user_id,  self.modify_msg.fuckoff(), parse_mode='Markdown')
