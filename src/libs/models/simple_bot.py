@@ -1,8 +1,13 @@
 import torch
 import yaml
+import warnings
 
 from os import path as os_path
 from transformers import T5ForConditionalGeneration, T5Tokenizer
+
+
+warnings.filterwarnings('ignore', message='__floordiv__ is deprecated')
+
 
 class MLChitChat:
     def __init__(self) -> None:
