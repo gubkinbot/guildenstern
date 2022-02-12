@@ -83,7 +83,7 @@ class Bot_logic:
 
             if is_callback_button:
                 # time.sleep(0)
-                self.delete(tg_user_id, self.impudence_msg_id)
+                # self.delete(tg_user_id, self.impudence_msg_id)
                 self.send(tg_user_id, f"---\nYou send:\n {message}\n---")
                 self.send(tg_user_id_companion, message)
                 self.db.Add_log(tg_user_id, session_id, message, time_send, "from_bot", 0)

@@ -78,7 +78,7 @@ class MessageHandler:
             
             model_msg = self.dialog_model(message)
             for row in model_msg:
-                res.append(str(row[0])[:10])
+                res.append(str(row[0]))
 
             return res
         else:

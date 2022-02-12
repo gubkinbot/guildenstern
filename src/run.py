@@ -65,7 +65,7 @@ def callback_query(call):
 def create_buttons(arr: list):
   buttons = types.InlineKeyboardMarkup()
   buttons.row_width = len(arr)
-  row = [types.InlineKeyboardButton(str(k), callback_data=str(v)) for k, v in enumerate(arr)]
+  row = [types.InlineKeyboardButton(str(k), callback_data='"'+v+'"') for k, v in enumerate(arr)]
   buttons.add(*row)
   return buttons
 
