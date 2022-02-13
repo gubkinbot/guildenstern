@@ -95,6 +95,10 @@ class DB_binding:
         res = self.Sql(f"SELECT id FROM users WHERE pseudonym = {pseudonym};")
         return None if res == [] else res[0]['id']
 
+    def Get_log_id_session_id_and_time_send(self, session_id, time_send):
+        res = self.Sql(f"SELECT id FROM log WHERE session_id = {session_id}, time_send = to_timestamp({time_send});")
+        return None if res == [] else res[0]['id']
+
     # Adds
 
     def Add_user(self, tg_user_id, social_credit, pseudonym):
@@ -121,6 +125,9 @@ class DB_binding:
         time_event = int(time_event*1000)/1000
         self.Sql(f"INSERT INTO points(user_id, delta_points, time_event) VALUES ({user_id}, {delta_points}, to_timestamp({time_event}) );")
 
+    def Add_selectors(self, log_id, user_select, arr):
+        self.Sql(f"INSERT INTO selectors(log_id, user_select, arr) VALUES ({log_id}, {user_select}, {';'.join(arr)} );")
+
     # Updates
 
     def Stop_queue(self, queue_id, time_stop, session_id):
@@ -129,8 +136,8 @@ class DB_binding:
     def Stop_session(self, session_id, time_stop, status):
         self.Sql(f"UPDATE sessions SET time_stop = to_timestamp({time_stop}), status = '{status}' WHERE id = {session_id};")
 
-    def Change_grade(self, time_send, is_bot): # in the future change to "def Change_grade(self, log_id, is_bot)"
-        self.Sql(f"UPDATE log SET grade = {is_bot} WHERE time_send = to_timestamp({time_send};")
+    def Change_grade(self, log_id, is_bot):
+        self.Sql(f"UPDATE log SET grade = {is_bot} WHERE id = {log_id};")
 
 # Debug
 

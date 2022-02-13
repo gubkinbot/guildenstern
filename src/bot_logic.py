@@ -101,7 +101,10 @@ class Bot_logic:
                     impudence_msg = impud['arr'][selected_id]
                     self.send(tg_user_id, f"---\nYou send:\n {impudence_msg}\n---")
                     self.send(tg_user_id_companion, impudence_msg)
+
                     self.db.Add_log(tg_user_id, session_id, impudence_msg, time_send, "from_bot", 0)
+                    log_id = self.db.Get_log_id_session_id_and_time_send(session_id, time_send)
+                    self.db.Add_selectors(log_id, selected_id, impud['arr'])
 
                     self.impudence.remove(impud)
 
@@ -113,8 +116,9 @@ class Bot_logic:
                             break
                     
                     self.edit(chat_id = tg_user_id, message_id = detected_bot['message_id'], text = detected_bot['text'])
-                    
-                    self.db.Change_grade(detected_bot['time_send'], 1)
+                    log_id = self.db.Get_log_id_session_id_and_time_send(detected_bot["session_id"], detected_bot['time_send'])
+
+                    self.db.Change_grade(log_id,detected_bot['time_send'], 1)
 
                     self.is_bot.remove(detected_bot)
             else: 
