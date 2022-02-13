@@ -88,7 +88,7 @@ class Bot_logic:
                 # time.sleep(0)
 
                 data = message.split(';')
-                selected_id = data[0]
+                selected_id = int(data[0])
 
                 if data[1] == 'impudence':
                     impud = {}
