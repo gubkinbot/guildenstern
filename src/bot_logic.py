@@ -5,8 +5,8 @@ from libs.models.nickname_generator import generate_nickname
 
 class Bot_logic:
 
-    MIN_WAITING_IN_QUEUE = 1
-    MAX_WAITING_IN_QUEUE = 600
+    MIN_WAITING_IN_QUEUE = 3
+    MAX_WAITING_IN_QUEUE = 60
     
     MAX_WAITING_IN_SESSIONS = 30
 
@@ -232,8 +232,8 @@ class Bot_logic:
 
     def cmd_stop(self, tg_user_id):
         time_stemp = int(time.time()*1000)/1000
-        self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '---\nSearch stopped.\n---')
-        self.stop_session(tg_user_id, time_stemp, "command_stop", '---\nSession stopped.\n---')
+        self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '---\nSearch stopped. Please write /start\n---')
+        self.stop_session(tg_user_id, time_stemp, "command_stop", '---\nSession stopped. Please write /start\n---')
 
     def cmd_info(self, tg_user_id):
         self.send(tg_user_id,f"Начать - /start\nОстановить - /stop\nБольше информации - /info")
@@ -263,7 +263,7 @@ class Bot_logic:
                 return
 
         self.send_online(tg_user_id)
-        self.send(tg_user_id, f'Please wait at least {self.MIN_WAITING_IN_QUEUE} seconds...')
+        self.send(tg_user_id, f'Please wait...') # f'Please wait at least {self.MIN_WAITING_IN_QUEUE} seconds...')
 
         self.db.Add_queue(tg_user_id, time_stemp)
 
