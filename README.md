@@ -7,7 +7,7 @@
 </details>
 
 <details> 
-  <summary>[SPOILER] Gachi scheme. version 08.02.22  </summary>
+  <summary>[SPOILER] Gachi scheme. version 13.02.22  </summary>
 
   ![""](/.resource/gachi_scheme.png "Gachi")
 </details>
