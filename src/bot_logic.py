@@ -216,15 +216,16 @@ class Bot_logic:
     def cmd_start(self, tg_user_id):
         time_stemp = int(time.time()*1000)/1000
         if not self.db.Get_id_from_tg_user_id(tg_user_id):
-            # сюда надо пихнуть выгрузку уже существующих ников из базы
-            #names = self.db.some_method()
-            names = []
-            nick = generate_nickname()
-            while nick in names:
-                nick = generate_nickname()
-            self.db.Add_user(tg_user_id, 0)
-            # сюда впихнуть сохранение никнейма в базу
-            self.send(tg_user_id,f"Приветственное сообщение, если здесь впервые. \nНачать - /start\bОстановить - /stop\nБольше информации - /info")
+
+            pseudonym = ""
+            while True:
+                pseudonym = generate_nickname()
+                finded_users = self.db.Get_user_id_from_pseudonym(pseudonym)
+                if finded_users == None:
+                    break
+            self.db.Add_user(tg_user_id, 0, pseudonym)
+
+            self.send(tg_user_id,f"---\nДобро пожаловать!\nВаш уникальный псевдоним: {pseudonym}\n \nНачать - /start\bОстановить - /stop\nБольше информации - /info")
             time.sleep(1)
 
         self.add_to_queue(tg_user_id, time_stemp)
