@@ -15,6 +15,8 @@ class Bot_logic:
     # (если только они в двоем в очереди, через это время соеденит)
     # MIN_WAITING_IN_QUEUE < it < MAX_WAITING_IN_QUEUE
 
+    BONUS_SELECT_BOT_MESSAGE = 10
+    BONUS_SELECT_NOT_BOT_MESSAGE = -10
 
     send = None # def send(tg_user_id, send_message)
     delete = None # def send(tg_user_id, message_id)
@@ -243,6 +245,11 @@ class Bot_logic:
             if grade != 0:
                 log_id = self.db.Get_log_id_session_id_and_time_send(detected_bot["session_id"], detected_bot['time_send'])
                 self.db.Change_grade(log_id, grade)
+
+                if self.db.Get_is_bot_from_log_id(log_id):
+                    self.send(tg_user_id, f"---\nThis is bot. \n+{self.BONUS_SELECT_BOT_MESSAGE} points\n---")
+                else:
+                    self.send(tg_user_id, f"---\nThis is not bot. \n{self.BONUS_SELECT_NOT_BOT_MESSAGE} points\n---")
 
             self.is_bot.remove(detected_bot)  
 

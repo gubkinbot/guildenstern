@@ -99,6 +99,10 @@ class DB_binding:
         res = self.Sql(f"SELECT id FROM log WHERE session_id = {session_id} AND time_send = to_timestamp({time_send});")
         return None if res == [] else res[0]['id']
 
+    def Get_is_bot_from_log_id(self, log_id):
+        res = self.Sql(f"SELECT type FROM log WHERE id = {log_id};")
+        return None if res == [] else res[0]['type']=='from_bot'
+
     # Adds
 
     def Add_user(self, tg_user_id, social_credit, pseudonym):
