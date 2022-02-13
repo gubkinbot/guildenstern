@@ -112,10 +112,9 @@ class Bot_logic:
                             detected_bot = v
                             break
                     
-                    #print(f"delete buttons: {detected_bot['tg_user_id']}, {tg_user_id}, {detected_bot['message_id']}, {detected_bot['text']}")
-
                     self.edit(chat_id = tg_user_id, message_id = detected_bot['message_id'], text = detected_bot['text'])
-                    #self.db.Edit_log() # change grade <>
+                    
+                    self.db.Change_grade(detected_bot['time_send'], 1)
 
                     self.is_bot.remove(detected_bot)
             else: 

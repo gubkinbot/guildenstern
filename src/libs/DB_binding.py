@@ -125,6 +125,9 @@ class DB_binding:
     def Stop_session(self, session_id, time_stop, status):
         self.Sql(f"UPDATE sessions SET time_stop = to_timestamp({time_stop}), status = '{status}' WHERE id = {session_id};")
 
+    def Change_grade(self, time_send, is_bot): # in the future change to "def Change_grade(self, log_id, is_bot)"
+        self.Sql(f"UPDATE log SET grade = {is_bot} WHERE time_send = to_timestamp({time_send};")
+
 # Debug
 
 #import time
