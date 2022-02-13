@@ -57,7 +57,7 @@ class Bot_logic:
 
 
     impudence = [] # [{'session_id': 0, 'message_id': 0, 'arr': []}]
-    is_bot = [] # [{'session_id': 0, 'message_id': 0, 'text': "", 'time_send': 0}]
+    is_bot = [] # [{'session_id': 0, 'tg_user_id': 0, 'message_id': 0, 'text': "", 'time_send': 0}]
 
     def handler_message(self, tg_user_id, message, is_callback_button = False):
 
@@ -100,7 +100,11 @@ class Bot_logic:
                     self.delete(tg_user_id, impud['message_id'])
                     impudence_msg = impud['arr'][selected_id]
                     self.send(tg_user_id, f"---\nYou send:\n {impudence_msg}\n---")
-                    self.send(tg_user_id_companion, impudence_msg)
+
+                    self.remove_button_bot_from_last_mgs(tg_user_id_companion)
+
+                    msg = self.send(tg_user_id_companion, impudence_msg, parse_mode='Markdown', reply_markup = self.create_buttons(['🤖'], "is_bot"))
+                    self.is_bot.append({'session_id': session_id, 'tg_user_id': tg_user_id_companion, 'message_id': msg.message_id, 'text': impudence_msg, 'time_send': time_send})
 
                     self.db.Add_log(tg_user_id, session_id, impudence_msg, time_send, "from_bot", 0)
                     log_id = self.db.Get_log_id_session_id_and_time_send(session_id, time_send)
@@ -109,42 +113,18 @@ class Bot_logic:
                     self.impudence.remove(impud)
 
                 if data[1] == 'is_bot':
-                    detected_bot = {}
-                    for v in self.is_bot[:]:
-                        if v['tg_user_id'] == tg_user_id:
-                            detected_bot = v
-                            break
-                    
-                    self.edit(chat_id = tg_user_id, message_id = detected_bot['message_id'], text = detected_bot['text'])
-                    log_id = self.db.Get_log_id_session_id_and_time_send(detected_bot["session_id"], detected_bot['time_send'])
-
-                    self.db.Change_grade(log_id,detected_bot['time_send'], 1)
-
-                    self.is_bot.remove(detected_bot)
+                    self.remove_button_bot_from_last_mgs(tg_user_id, 1)
             else: 
                 # markup = InlineKeyboardMarkup()
                 # markup.row_width = 3
                 # markup.add(InlineKeyboardButton('1', callback_data='1_'), InlineKeyboardButton('2', callback_data='2_'), InlineKeyboardButton('3', callback_data='3_'))
                 # self.send(tg_user_id_companion, self.modify_msg.process(message), parse_mode='Markdown', reply_markup=markup)
                 
-                #
-
-                detected_bot = {}
-
-                for v in self.is_bot[:]:
-                    if v['tg_user_id'] == tg_user_id_companion:
-                        detected_bot = v
-                        break
-
-                if detected_bot != {}:
-                    self.edit(chat_id = tg_user_id_companion, message_id = detected_bot['message_id'], text = detected_bot['text'])
-                    self.is_bot.remove(detected_bot)  
-
-                #   
+                self.remove_button_bot_from_last_mgs(tg_user_id_companion)  
                 
                 send_message = self.modify_msg.preprocess(message)
                 msg = self.send(tg_user_id_companion, send_message, parse_mode='Markdown', reply_markup = self.create_buttons(['🤖'], "is_bot"))
-                self.is_bot.append({'tg_user_id': tg_user_id_companion, 'message_id': msg.message_id, 'text': send_message, 'time_send': time_send})
+                self.is_bot.append({'session_id': session_id, 'tg_user_id': tg_user_id_companion, 'message_id': msg.message_id, 'text': send_message, 'time_send': time_send})
                 
                 #print(f"send buttons: {session_id}, {tg_user_id_companion}, {msg.message_id}, {send_message}")
                 
@@ -229,7 +209,7 @@ class Bot_logic:
                     break
             self.db.Add_user(tg_user_id, 0, pseudonym)
 
-            self.send(tg_user_id,f"---\nДобро пожаловать!\nВаш уникальный псевдоним: {pseudonym}\n \nНачать - /start\bОстановить - /stop\nБольше информации - /info")
+            self.send(tg_user_id,f"---\nДобро пожаловать!\n\nВаш уникальный псевдоним:\n{pseudonym}\n\nНачать - /start\nОстановить - /stop\nБольше информации - /info\n---")
             time.sleep(1)
 
         self.add_to_queue(tg_user_id, time_stemp)
@@ -248,6 +228,23 @@ class Bot_logic:
         self.modify_msg.flag = True
 
     # utils
+
+    def remove_button_bot_from_last_mgs(self, tg_user_id, grade = 0):
+        detected_bot = {}
+
+        for v in self.is_bot[:]:
+            if v['tg_user_id'] == tg_user_id:
+                detected_bot = v
+                break
+
+        if detected_bot != {}:
+            self.edit(chat_id = tg_user_id, message_id = detected_bot['message_id'], text = detected_bot['text'])
+            
+            if grade != 0:
+                log_id = self.db.Get_log_id_session_id_and_time_send(detected_bot["session_id"], detected_bot['time_send'])
+                self.db.Change_grade(log_id, grade)
+
+            self.is_bot.remove(detected_bot)  
 
     def send_online(self, tg_user_id):
         # users_counts = len(self.db.Sql("SELECT * FROM users;"))

@@ -92,17 +92,17 @@ class DB_binding:
         return last_companion if last_companion else 0
 
     def Get_user_id_from_pseudonym(self, pseudonym):
-        res = self.Sql(f"SELECT id FROM users WHERE pseudonym = {pseudonym};")
+        res = self.Sql(f"SELECT id FROM users WHERE pseudonym = '{pseudonym}';")
         return None if res == [] else res[0]['id']
 
     def Get_log_id_session_id_and_time_send(self, session_id, time_send):
-        res = self.Sql(f"SELECT id FROM log WHERE session_id = {session_id}, time_send = to_timestamp({time_send});")
+        res = self.Sql(f"SELECT id FROM log WHERE session_id = {session_id} AND time_send = to_timestamp({time_send});")
         return None if res == [] else res[0]['id']
 
     # Adds
 
     def Add_user(self, tg_user_id, social_credit, pseudonym):
-        self.Sql(f"INSERT INTO users(tg_user_id, social_credit, pseudonym) VALUES ({tg_user_id}, {social_credit}, {pseudonym});")
+        self.Sql(f"INSERT INTO users(tg_user_id, social_credit, pseudonym) VALUES ({tg_user_id}, {social_credit}, '{pseudonym}');")
 
     def Add_queue(self, tg_user_id, time_start):
         user_id = self.Get_id_from_tg_user_id(tg_user_id)
@@ -126,7 +126,7 @@ class DB_binding:
         self.Sql(f"INSERT INTO points(user_id, delta_points, time_event) VALUES ({user_id}, {delta_points}, to_timestamp({time_event}) );")
 
     def Add_selectors(self, log_id, user_select, arr):
-        self.Sql(f"INSERT INTO selectors(log_id, user_select, arr) VALUES ({log_id}, {user_select}, {';'.join(arr)} );")
+        self.Sql(f"INSERT INTO selectors(message_id, user_select, arr) VALUES ({log_id}, {user_select}, '{';'.join(arr)}' );")
 
     # Updates
 
