@@ -55,8 +55,10 @@ class MessageHandler:
             
             i = 1
             for row in model_msg:
-                msg_start += f'{str(i)}. ' + row[0] + "\n\n"
-                # msg_end += str(row[1]) + "\n"
+                msg = row[0]
+                if msg[-1] == '.':
+                    msg = msg[:-1]
+                msg_start += f'{str(i)}. ' + msg + "\n\n"
                 i += 1
                 
             
