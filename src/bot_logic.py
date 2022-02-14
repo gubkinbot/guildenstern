@@ -88,19 +88,8 @@ class Bot_logic:
             
         if session_id:
             send_message = self.modify_msg.preprocess(message)
-<<<<<<< ours
-            # history = self.db.Get_old_messages(self.db.Get_id_from_tg_user_id(tg_user_id), session_id)
-
 
             self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, send_message, time_send)
-            # self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, str(history), time_send)
-=======
-            history = self.db.Get_old_messages(self.db.Get_id_from_tg_user_id(tg_user_id), session_id)
-
-
-            self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, send_message, time_send)
-            self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, str(history), time_send)
->>>>>>> theirs
 
             # self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
             self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)

@@ -22,10 +22,6 @@ class DB_binding:
             user=db_user,
             password=db_password
         )
-<<<<<<< HEAD
-=======
-        
->>>>>>> parent of 6a877dc (exp)
         self.connect.autocommit = True
 
     def Disconnect(self):
@@ -54,11 +50,6 @@ class DB_binding:
                 res.append(dict(row))
 
             return res
-    
-    # Gets
-    def Get_old_messages(self, user_id, session_id):
-        res = self.Sql(f"SELECT * FROM log WHERE user_id = {user_id} AND session_id = {session_id};")
-        return None if res == [] else res
 
     def Get_id_from_tg_user_id(self, tg_user_id):
         res = self.Sql(f"SELECT id FROM users WHERE tg_user_id = {tg_user_id};")
