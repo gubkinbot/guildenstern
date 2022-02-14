@@ -344,6 +344,9 @@ class Bot_logic:
                 self.send(session['tg_user_id_b'], bot_message)
 
                 #
+                self.remove_button_bot_from_last_mgs(session['tg_user_id_a'])
+                self.remove_button_bot_from_last_mgs(session['tg_user_id_b'])
+
                 added_points = self.db.Get_all_users_points_from_interval(session['time_start'], time_stemp)
                 user_id_a = self.db.Get_id_from_tg_user_id(session['tg_user_id_a'])
                 user_id_b = self.db.Get_id_from_tg_user_id(session['tg_user_id_b'])
