@@ -95,7 +95,6 @@ class MessageHandler:
 
     # @staticmethod
     def preprocess(self, question: str) -> str:
-        if question[-1] == '.'
         question = question[0].upper() + question[1:] # начинаем новое предложение с заглавной буквы
         question = re.sub(r'!+', '!', question) # удаление дублей в пробелах
         question = re.sub(r'\)+', ')', question) # удаление дублей в пробелах
