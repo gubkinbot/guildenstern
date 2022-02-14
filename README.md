@@ -7,13 +7,13 @@
 </details>
 
 <details> 
-  <summary>[SPOILER] Gachi scheme. version 13.02.22  </summary>
+  <summary>[SPOILER] Gachi scheme. version 08.02.22  </summary>
 
   ![""](/.resource/gachi_scheme.png "Gachi")
 </details>
 
 <details> 
-  <summary>[SPOILER] DB scheme. version 08.02.22  </summary>
+  <summary>[SPOILER] DB scheme. version 13.02.22  </summary>
 
   ![""](/.resource/db_scheme.png "Gachi")
 </details>
