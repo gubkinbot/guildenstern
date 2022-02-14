@@ -95,6 +95,7 @@ class MessageHandler:
 
     # @staticmethod
     def preprocess(self, question: str) -> str:
+        if question[-1] == '.'
         question = question[0].upper() + question[1:] # начинаем новое предложение с заглавной буквы
         question = re.sub(r'!+', '!', question) # удаление дублей в пробелах
         question = re.sub(r'\)+', ')', question) # удаление дублей в пробелах
@@ -102,6 +103,8 @@ class MessageHandler:
         question = re.sub(r'(?<=[.,!?:;])(?=[^\s])', r' ', question) # вставка пробелов после знаков препинания
         question = re.sub('\s+(?=[,.!?])', '', question) # удаление пробелов перед знаками препинания
         # пока так, когда появится история сообщений, надо будет переделать
+        if question[-1] == '.':
+            question = question[:-1]
         question += "\n\n"
         
         return question
