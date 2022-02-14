@@ -255,8 +255,10 @@ class Bot_logic:
 
                 if self.db.Get_is_bot_from_log_id(log_id):
                     self.send(tg_user_id, f"---\nThis is bot. \n+{self.BONUS_SELECT_BOT_MESSAGE} points\n---")
+                    self.db.Add_points(tg_user_id, self.BONUS_SELECT_BOT_MESSAGE, detected_bot['time_send'])
                 else:
                     self.send(tg_user_id, f"---\nThis is not bot. \n{self.BONUS_SELECT_NOT_BOT_MESSAGE} points\n---")
+                    self.db.Add_points(tg_user_id, self.BONUS_SELECT_NOT_BOT_MESSAGE, detected_bot['time_send'])
 
             self.is_bot.remove(detected_bot)  
 
