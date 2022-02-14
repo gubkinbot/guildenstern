@@ -212,6 +212,7 @@ class Bot_logic:
             self.db.Add_user(tg_user_id, 0, pseudonym)
 
             self.send(tg_user_id,f"---\nДобро пожаловать!\n\nВаш уникальный псевдоним:\n{pseudonym}\n---")
+            self.db.Add_points(tg_user_id, 0, time_stemp)
             time.sleep(1)
 
         self.add_to_queue(tg_user_id, time_stemp)
