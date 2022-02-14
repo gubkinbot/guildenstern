@@ -55,8 +55,10 @@ class MessageHandler:
             
             i = 1
             for row in model_msg:
-                msg_start += f'{str(i)}. ' + row[0] + "\n\n"
-                # msg_end += str(row[1]) + "\n"
+                msg = row[0]
+                if msg[-1] == '.':
+                    msg = msg[:-1]
+                msg_start += f'{str(i)}. ' + msg + "\n\n"
                 i += 1
                 
             
@@ -77,6 +79,7 @@ class MessageHandler:
             res = []
             
             model_msg = self.dialog_model(message)
+
             for row in model_msg:
                 res.append(str(row[0]))
 
@@ -102,6 +105,8 @@ class MessageHandler:
         question = re.sub(r'(?<=[.,!?:;])(?=[^\s])', r' ', question) # вставка пробелов после знаков препинания
         question = re.sub('\s+(?=[,.!?])', '', question) # удаление пробелов перед знаками препинания
         # пока так, когда появится история сообщений, надо будет переделать
+        if question[-1] == '.':
+            question = question[:-1]
         question += "\n\n"
         
         return question
