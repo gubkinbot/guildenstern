@@ -58,7 +58,7 @@ def handle_text(message):
 def callback_query(call):
   print(f"{call.id}, {call.message.chat.id}, {call.data}\n")
   bot.answer_callback_query(call.id, f"")
-  logic.handler_message(call.message.chat.id, call.data, is_callback_button = True)
+  logic.handler_message(call.message.chat.id, call.data, is_callback_button = True, message_id = call.message.id)
 
 
 # utils

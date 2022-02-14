@@ -61,7 +61,7 @@ class Bot_logic:
     impudence = [] # [{'session_id': 0, 'message_id': 0, 'arr': []}]
     is_bot = [] # [{'session_id': 0, 'tg_user_id': 0, 'message_id': 0, 'text': "", 'time_send': 0}]
 
-    def handler_message(self, tg_user_id, message, is_callback_button = False):
+    def handler_message(self, tg_user_id, message, is_callback_button = False, message_id = 0):
 
         # if message.lower()[:6] == '/start':
         #     self.commands['start'](tg_user_id)
@@ -95,7 +95,7 @@ class Bot_logic:
                 if data[1] == 'impudence':
                     impud = {}
                     for v in self.impudence[:]:
-                        if v['session_id'] == session_id:
+                        if v['message_id'] == message_id:
                             impud = v
                             break
                     
@@ -115,7 +115,7 @@ class Bot_logic:
                     self.impudence.remove(impud)
 
                 if data[1] == 'is_bot':
-                    self.remove_button_bot_from_last_mgs(tg_user_id, 1)
+                    self.remove_button_bot_from_last_mgs(tg_user_id, 1, message_id)
             else: 
                 # markup = InlineKeyboardMarkup()
                 # markup.row_width = 3
@@ -231,11 +231,12 @@ class Bot_logic:
 
     # utils
 
-    def remove_button_bot_from_last_mgs(self, tg_user_id, grade = 0):
+    def remove_button_bot_from_last_mgs(self, tg_user_id, grade = 0, message_id = 0):
         detected_bot = {}
 
         for v in self.is_bot[:]:
-            if v['tg_user_id'] == tg_user_id:
+            if ((grade != 0 and v['message_id'] == message_id) or 
+                (grade == 0 and v['tg_user_id'] == tg_user_id)):
                 detected_bot = v
                 break
 
