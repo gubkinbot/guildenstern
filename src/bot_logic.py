@@ -49,7 +49,8 @@ class Bot_logic:
             'stop': self.cmd_stop,
             'search': self.cmd_start,
             'info': self.cmd_info,
-            'test': self.cmd_test
+            'test': self.cmd_test,
+            'top': self.cmd_top
         }
 
     # handlers
@@ -210,7 +211,7 @@ class Bot_logic:
                     break
             self.db.Add_user(tg_user_id, 0, pseudonym)
 
-            self.send(tg_user_id,f"---\nДобро пожаловать!\n\nВаш уникальный псевдоним:\n{pseudonym}\n\nНачать - /start\nОстановить - /stop\nБольше информации - /info\n---")
+            self.send(tg_user_id,f"---\nДобро пожаловать!\n\nВаш уникальный псевдоним:\n{pseudonym}\n---")
             time.sleep(1)
 
         self.add_to_queue(tg_user_id, time_stemp)
@@ -221,12 +222,41 @@ class Bot_logic:
         self.stop_session(tg_user_id, time_stemp, "command_stop", '---\nSession stopped. Please write /start\n---')
 
     def cmd_info(self, tg_user_id):
-        self.send(tg_user_id,f"Начать - /start\nОстановить - /stop\nБольше информации - /info")
+        self.send(tg_user_id,f"Начать - /start\nОстановить - /stop\nТоп - /top\nБольше информации - /info")
         self.send(tg_user_id,f"Правила: (...)")
         self.send_online(tg_user_id)
 
     def cmd_test(self, tg_user_id):
         self.modify_msg.flag = True
+
+    def cmd_test(self, tg_user_id):
+        self.modify_msg.flag = True
+
+    def cmd_top(self, tg_user_id):
+        res = self.db.Get_all_users_points_from_interval(0, time.time())
+
+        sys_msg = ""
+        sys_msg += f"---\nТоп пользователей:\n\n"
+
+        top_count = 10
+        i = 1
+        for k, v in sorted(res.items(), key=lambda item: item[1], reverse=True):
+            pseudonym = self.db.Get_pseudonym_from_user_id(k)
+            sys_msg += f"{i} - {pseudonym} - {v}\n"
+
+            if i == top_count: 
+                break
+            i += 1
+        
+        user_id = self.db.Get_id_from_tg_user_id(tg_user_id)
+        pseudonym = self.db.Get_pseudonym_from_user_id(user_id)
+        points = res[int(user_id)]
+
+        sys_msg += f"\nВаш псевдоним:\n{pseudonym}\nВаши очки: {points}\n"
+        sys_msg += f"---"
+
+        self.send(tg_user_id, sys_msg)
+        
 
     # utils
 
@@ -279,7 +309,7 @@ class Bot_logic:
                 self.send(tg_user_id, "---\nYou are in session, please write /stop and repeate /start.\n---")
                 return
 
-        self.send_online(tg_user_id)
+        #self.send_online(tg_user_id)
         self.send(tg_user_id, f'Please wait...') # f'Please wait at least {self.MIN_WAITING_IN_QUEUE} seconds...')
 
         self.db.Add_queue(tg_user_id, time_stemp)

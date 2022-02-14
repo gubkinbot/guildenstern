@@ -95,6 +95,10 @@ class DB_binding:
         res = self.Sql(f"SELECT id FROM users WHERE pseudonym = '{pseudonym}';")
         return None if res == [] else res[0]['id']
 
+    def Get_pseudonym_from_user_id(self, user_id):
+        res = self.Sql(f"SELECT pseudonym FROM users WHERE id = '{user_id}';")
+        return None if res == [] else res[0]['pseudonym']
+
     def Get_log_id_session_id_and_time_send(self, session_id, time_send):
         res = self.Sql(f"SELECT id FROM log WHERE session_id = {session_id} AND time_send = to_timestamp({time_send});")
         return None if res == [] else res[0]['id']
@@ -103,6 +107,14 @@ class DB_binding:
         res = self.Sql(f"SELECT type FROM log WHERE id = {log_id};")
         return None if res == [] else res[0]['type']=='from_bot'
 
+    def Get_all_users_points_from_interval(self, time_start, time_stop) -> dict:
+        res = self.Sql(f"SELECT user_id, delta_points FROM points WHERE to_timestamp({time_start}) < time_event AND time_event < to_timestamp({time_stop});")
+        new_res = {}
+        for v in res:
+            if not new_res.get(v['user_id']): 
+                new_res[v['user_id']] = 0
+            new_res[v['user_id']] += v['delta_points']
+        return new_res
     # Adds
 
     def Add_user(self, tg_user_id, social_credit, pseudonym):
