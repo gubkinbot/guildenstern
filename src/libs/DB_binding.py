@@ -22,6 +22,10 @@ class DB_binding:
             user=db_user,
             password=db_password
         )
+<<<<<<< HEAD
+=======
+        
+>>>>>>> parent of 6a877dc (exp)
         self.connect.autocommit = True
 
     def Disconnect(self):
