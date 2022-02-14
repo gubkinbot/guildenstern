@@ -343,4 +343,16 @@ class Bot_logic:
                 self.send(session['tg_user_id_a'], bot_message)
                 self.send(session['tg_user_id_b'], bot_message)
 
+                #
+                added_points = self.db.Get_all_users_points_from_interval(session['time_start'], time_stemp)
+                user_id_a = self.db.Get_id_from_tg_user_id(session['tg_user_id_a'])
+                user_id_b = self.db.Get_id_from_tg_user_id(session['tg_user_id_b'])
+                
+                added_points_a = added_points[user_id_a] if added_points.get(user_id_a) else 0
+                added_points_b = added_points[user_id_b] if added_points.get(user_id_b) else 0
+
+                self.send(session['tg_user_id_a'], f"> Прирост очков за сессию: {added_points_a}")
+                self.send(session['tg_user_id_b'], f"> Прирост очков за сессию: {added_points_b}")
+                #
+
                 self.current_sessions.remove(session)
