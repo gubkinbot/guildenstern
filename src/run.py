@@ -21,6 +21,7 @@ logic.modify_msg = handler
 logic.send = bot.send_message
 logic.delete = bot.delete_message
 logic.edit = bot.edit_message_text
+logic.answer = bot.answer_callback_query
 
 logic.init()
 
@@ -62,8 +63,8 @@ def handle_text(message):
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
   print(f"{call.id}, {call.message.chat.id}, {call.data}\n")
-  bot.answer_callback_query(call.id, f"")
-  logic.handler_button(call.message.chat.id, call.data.split(';'), call.message.id)
+  #bot.answer_callback_query(call.id, f"")
+  logic.handler_button(call.message.chat.id, call.data.split(';'), call.message.id, call.id)
 
 # utils
 

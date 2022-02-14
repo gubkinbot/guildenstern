@@ -20,6 +20,7 @@ class Bot_logic:
 
     send = None # def send(tg_user_id, send_message)
     delete = None # def send(tg_user_id, message_id)
+    answer = None
     db = None # DB_binding()
     modify_msg = None # MessageHandler()
     create_buttons = None # create_buttons()
@@ -96,10 +97,10 @@ class Bot_logic:
             impudence = self.modify_msg.impudence(message)
             if impudence:
                 
-                msg_for_select = f"---\nPlease select message:"
+                msg_for_select = f""
                 for k, v in enumerate(impudence):
-                    msg_for_select += f"\n\n{k+1} - " + v
-                msg_for_select += f"\n---"
+                    msg_for_select += f"\n{k+1} - " + v
+                msg_for_select += f""
 
                 msg = self.send( tg_user_id_companion, msg_for_select, reply_markup = self.create_buttons(['1','2','3'], "impudence"))
                 self.impudence.append({'session_id': session_id, 'message_id': msg.message_id, 'arr': impudence})
@@ -107,7 +108,7 @@ class Bot_logic:
             self.send(tg_user_id,  self.modify_msg.process(message), parse_mode='Markdown')
             self.send(tg_user_id,  self.modify_msg.fuckoff(), parse_mode='Markdown')
     
-    def handler_button(self, tg_user_id, data, message_id):
+    def handler_button(self, tg_user_id, data, message_id, call_id):
         time_send = int(time.time()*1000)/1000
         session_id = None
         tg_user_id_companion = None
@@ -134,7 +135,7 @@ class Bot_logic:
                 
                 self.delete(tg_user_id, impud['message_id'])
                 impudence_msg = impud['arr'][selected_id]
-                self.send(tg_user_id, f"---\nYou send:\n {impudence_msg}\n---")
+                self.send(tg_user_id, f"> Вы отправили:\n> {impudence_msg}")
 
                 self.send_and_bot_button(session_id, tg_user_id_companion, impudence_msg, time_send)
 
@@ -145,7 +146,7 @@ class Bot_logic:
                 self.impudence.remove(impud)
 
             if data[1] == 'is_bot':
-                self.remove_button_bot_from_last_mgs(tg_user_id, 1, message_id)
+                self.remove_button_bot_from_last_mgs(tg_user_id, 1, message_id, call_id)
 
     # schedulers
 
@@ -186,7 +187,7 @@ class Bot_logic:
             waiting_time = time_stemp - user_in_queue['time_start']
             if waiting_time > self.MAX_WAITING_IN_QUEUE:
                 tg_user_id = user_in_queue['tg_user_id']
-                self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '---\nTimeout search. Please repeat /start\n---')
+                self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '> Превышено время ожидания в очереди. /start')
 
         for session in self.current_sessions:
             last_message_timestamp = self.db.Get_last_message_timestamp_from_session_id(session['session_id'])
@@ -195,7 +196,7 @@ class Bot_logic:
             waiting_time = time_stemp - last_message_timestamp
             if waiting_time > self.MAX_WAITING_IN_QUEUE:
                 tg_user_id = session['tg_user_id_a']
-                self.stop_session(tg_user_id, time_stemp, f"Timeout({self.MAX_WAITING_IN_SESSIONS})", '---\nTimeout session. Please repeat /start\n---')
+                self.stop_session(tg_user_id, time_stemp, f"Timeout({self.MAX_WAITING_IN_SESSIONS})", '> Превышено время ожидания в сессии. /start')
 
     # commands
 
@@ -211,7 +212,7 @@ class Bot_logic:
                     break
             self.db.Add_user(tg_user_id, 0, pseudonym)
 
-            self.send(tg_user_id,f"---\nДобро пожаловать!\n\nВаш уникальный псевдоним:\n{pseudonym}\n---")
+            self.send(tg_user_id,f"Добро пожаловать!\n\nВаш уникальный псевдоним:\n{pseudonym}")
             self.db.Add_points(tg_user_id, 0, time_stemp)
             time.sleep(1)
 
@@ -219,8 +220,8 @@ class Bot_logic:
 
     def cmd_stop(self, tg_user_id):
         time_stemp = int(time.time()*1000)/1000
-        self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '---\nSearch stopped. Please write /start\n---')
-        self.stop_session(tg_user_id, time_stemp, "command_stop", '---\nSession stopped. Please write /start\n---')
+        self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '> Поиск остановлен. /start')
+        self.stop_session(tg_user_id, time_stemp, "command_stop", '> Сессия остановлена. /start')
 
     def cmd_info(self, tg_user_id):
         self.send(tg_user_id,f"Начать - /start\nОстановить - /stop\nТоп - /top\nБольше информации - /info")
@@ -237,7 +238,7 @@ class Bot_logic:
         res = self.db.Get_all_users_points_from_interval(0, time.time())
 
         sys_msg = ""
-        sys_msg += f"---\nТоп пользователей:\n\n"
+        sys_msg += f"> Топ пользователей:\n\n"
 
         top_count = 10
         i = 1
@@ -253,8 +254,7 @@ class Bot_logic:
         pseudonym = self.db.Get_pseudonym_from_user_id(user_id)
         points = res[int(user_id)]
 
-        sys_msg += f"\nВаш псевдоним:\n{pseudonym}\nВаши очки: {points}\n"
-        sys_msg += f"---"
+        sys_msg += f"\nВаш псевдоним:\n- {pseudonym}\nВаши очки: {points}\n"
 
         self.send(tg_user_id, sys_msg)
         
@@ -268,7 +268,7 @@ class Bot_logic:
         self.is_bot.append({'session_id': session_id, 'tg_user_id': tg_user_id, 'message_id': msg.message_id, 'text': send_message, 'time_send': time_send})
 
 
-    def remove_button_bot_from_last_mgs(self, tg_user_id, grade = 0, message_id = 0):
+    def remove_button_bot_from_last_mgs(self, tg_user_id, grade = 0, message_id = 0, call_id = 0):
         detected_bot = {}
 
         for v in self.is_bot[:]:
@@ -285,10 +285,10 @@ class Bot_logic:
                 self.db.Change_grade(log_id, grade)
 
                 if self.db.Get_is_bot_from_log_id(log_id):
-                    self.send(tg_user_id, f"---\nThis is bot. \n+{self.BONUS_SELECT_BOT_MESSAGE} points\n---")
+                    self.answer(call_id, f"это БОТ\n+{self.BONUS_SELECT_BOT_MESSAGE} очков", cache_time=60)
                     self.db.Add_points(tg_user_id, self.BONUS_SELECT_BOT_MESSAGE, detected_bot['time_send'])
                 else:
-                    self.send(tg_user_id, f"---\nThis is not bot. \n{self.BONUS_SELECT_NOT_BOT_MESSAGE} points\n---")
+                    self.answer(call_id, f"это НЕ бот\n{self.BONUS_SELECT_NOT_BOT_MESSAGE} очков", cache_time=60)
                     self.db.Add_points(tg_user_id, self.BONUS_SELECT_NOT_BOT_MESSAGE, detected_bot['time_send'])
 
             self.is_bot.remove(detected_bot)  
@@ -297,7 +297,7 @@ class Bot_logic:
         # users_counts = len(self.db.Sql("SELECT * FROM users;"))
         queue_counts = len(self.current_queue)
         session_counts = len(self.current_sessions)*2
-        self.send(tg_user_id, f'Online users:\nin queue - {queue_counts}\nin sessions - {session_counts}\n')
+        self.send(tg_user_id, f'Онлайн пользователи:\nв очереди - {queue_counts}\nв сессиях - {session_counts}\n')
 
     def add_to_queue(self, tg_user_id, time_stemp):
         for user_in_queue in self.current_queue:
@@ -307,11 +307,11 @@ class Bot_logic:
         for sessions in self.current_sessions:
             if (sessions['tg_user_id_a'] == tg_user_id or
                 sessions['tg_user_id_b'] == tg_user_id):
-                self.send(tg_user_id, "---\nYou are in session, please write /stop and repeate /start.\n---")
+                self.send(tg_user_id, "> Вы в сессии. /stop , /start")
                 return
 
         #self.send_online(tg_user_id)
-        self.send(tg_user_id, f'Please wait...') # f'Please wait at least {self.MIN_WAITING_IN_QUEUE} seconds...')
+        self.send(tg_user_id, f'> Пожалуйста подождите...') # f'Please wait at least {self.MIN_WAITING_IN_QUEUE} seconds...')
 
         self.db.Add_queue(tg_user_id, time_stemp)
 
@@ -325,7 +325,7 @@ class Bot_logic:
         session_id = self.db.Get_session_id_from_time_start(time_stemp)
         self.current_sessions.append({'session_id': session_id, 'tg_user_id_a': tg_user_id_a, 'tg_user_id_b': tg_user_id_b, 'time_start': time_stemp})
         
-        self.stop_queue(tg_user_id_a, tg_user_id_b, time_stemp, session_id, '---\nCompanion found!\nPlease, send message...\n---')
+        self.stop_queue(tg_user_id_a, tg_user_id_b, time_stemp, session_id, '> Собеседник найден')
 
     def stop_queue(self, tg_user_id_a, tg_user_id_b, time_stemp, session_id, bot_message):
         for user_in_queue in self.current_queue[:]:
