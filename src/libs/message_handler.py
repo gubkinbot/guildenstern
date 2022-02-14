@@ -79,8 +79,12 @@ class MessageHandler:
             res = []
             
             model_msg = self.dialog_model(message)
+
             for row in model_msg:
-                res.append(str(row[0]))
+                msg = str(row[0])
+                if msg[-1] == '.':
+                    msg = msg[:-1]
+                res.append(msg)
 
             return res
         else:
