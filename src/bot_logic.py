@@ -351,8 +351,8 @@ class Bot_logic:
                 added_points_a = added_points[user_id_a] if added_points.get(user_id_a) else 0
                 added_points_b = added_points[user_id_b] if added_points.get(user_id_b) else 0
 
-                self.send(session['tg_user_id_a'], f"> Прирост очков за ссесию: {added_points_a}")
-                self.send(session['tg_user_id_b'], f"> Прирост очков за ссесию: {added_points_b}")
+                self.send(session['tg_user_id_a'], f"> Прирост очков за сессию: {added_points_a}")
+                self.send(session['tg_user_id_b'], f"> Прирост очков за сессию: {added_points_b}")
                 #
 
                 self.current_sessions.remove(session)
