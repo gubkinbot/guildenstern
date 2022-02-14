@@ -6,7 +6,7 @@ from libs.models.nickname_generator import generate_nickname
 class Bot_logic:
 
     MIN_WAITING_IN_QUEUE = 3
-    MAX_WAITING_IN_QUEUE = 60
+    MAX_WAITING_IN_QUEUE = 180
     
     MAX_WAITING_IN_SESSIONS = 30
 
@@ -89,7 +89,7 @@ class Bot_logic:
         if session_id:
             send_message = self.modify_msg.preprocess(message)
 
-            self.send_and_bot_button(session_id, tg_user_id_companion, send_message, time_send)
+            self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, send_message, time_send)
 
             # self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
             self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
@@ -105,8 +105,9 @@ class Bot_logic:
                 msg = self.send( tg_user_id_companion, msg_for_select, reply_markup = self.create_buttons(['1','2','3'], "impudence"))
                 self.impudence.append({'session_id': session_id, 'message_id': msg.message_id, 'arr': impudence})
         else:
-            self.send(tg_user_id,  self.modify_msg.process(message), parse_mode='Markdown')
-            self.send(tg_user_id,  self.modify_msg.fuckoff(), parse_mode='Markdown')
+            self.send(tg_user_id, "> /info")
+            # self.send(tg_user_id,  self.modify_msg.process(message), parse_mode='Markdown')
+            # self.send(tg_user_id,  self.modify_msg.fuckoff(), parse_mode='Markdown')
     
     def handler_button(self, tg_user_id, data, message_id, call_id):
         time_send = int(time.time()*1000)/1000
@@ -137,7 +138,7 @@ class Bot_logic:
                 impudence_msg = impud['arr'][selected_id]
                 self.send(tg_user_id, f"> Вы отправили:\n> {impudence_msg}")
 
-                self.send_and_bot_button(session_id, tg_user_id_companion, impudence_msg, time_send)
+                self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, impudence_msg, time_send)
 
                 self.db.Add_log(tg_user_id, session_id, impudence_msg, time_send, "from_bot", 0)
                 log_id = self.db.Get_log_id_session_id_and_time_send(session_id, time_send)
@@ -212,7 +213,7 @@ class Bot_logic:
                     break
             self.db.Add_user(tg_user_id, 0, pseudonym)
 
-            self.send(tg_user_id,f"Добро пожаловать!\n\nВаш уникальный псевдоним:\n{pseudonym}")
+            self.send(tg_user_id,f"Добро пожаловать!\n\nВаш уникальный псевдоним:\n{pseudonym}\n\nНачать - /start\nБольше инофрмации - /info")
             self.db.Add_points(tg_user_id, 0, time_stemp)
             time.sleep(1)
 
@@ -261,37 +262,33 @@ class Bot_logic:
 
     # utils
 
-    def send_and_bot_button(self, session_id, tg_user_id, send_message, time_send):
+    def send_and_bot_button(self, session_id, tg_user_id, tg_user_id_companion, send_message, time_send):
         self.remove_button_bot_from_last_mgs(tg_user_id)   
-        msg = self.send(tg_user_id, send_message, parse_mode='Markdown', reply_markup = self.create_buttons(['🤖'], "is_bot"))
+        msg = self.send(tg_user_id_companion, send_message, parse_mode='Markdown', reply_markup = self.create_buttons(['🤖'], "is_bot"))
         
-        self.is_bot.append({'session_id': session_id, 'tg_user_id': tg_user_id, 'message_id': msg.message_id, 'text': send_message, 'time_send': time_send})
+        self.is_bot.append({'session_id': session_id, 'tg_user_id': tg_user_id_companion, 'message_id': msg.message_id, 'text': send_message, 'time_send': time_send})
 
 
     def remove_button_bot_from_last_mgs(self, tg_user_id, grade = 0, message_id = 0, call_id = 0):
-        detected_bot = {}
-
         for v in self.is_bot[:]:
             if ((grade != 0 and v['message_id'] == message_id) or 
                 (grade == 0 and v['tg_user_id'] == tg_user_id)):
                 detected_bot = v
-                break
+                
+                self.edit(chat_id = tg_user_id, message_id = detected_bot['message_id'], text = detected_bot['text'])
+                
+                if grade != 0:
+                    log_id = self.db.Get_log_id_session_id_and_time_send(detected_bot["session_id"], detected_bot['time_send'])
+                    self.db.Change_grade(log_id, grade)
 
-        if detected_bot != {}:
-            self.edit(chat_id = tg_user_id, message_id = detected_bot['message_id'], text = detected_bot['text'])
-            
-            if grade != 0:
-                log_id = self.db.Get_log_id_session_id_and_time_send(detected_bot["session_id"], detected_bot['time_send'])
-                self.db.Change_grade(log_id, grade)
+                    if self.db.Get_is_bot_from_log_id(log_id):
+                        self.answer(call_id, f"это БОТ\n+{self.BONUS_SELECT_BOT_MESSAGE} очков", cache_time=120)
+                        self.db.Add_points(tg_user_id, self.BONUS_SELECT_BOT_MESSAGE, detected_bot['time_send'])
+                    else:
+                        self.answer(call_id, f"это НЕ бот\n{self.BONUS_SELECT_NOT_BOT_MESSAGE} очков", cache_time=120)
+                        self.db.Add_points(tg_user_id, self.BONUS_SELECT_NOT_BOT_MESSAGE, detected_bot['time_send'])
 
-                if self.db.Get_is_bot_from_log_id(log_id):
-                    self.answer(call_id, f"это БОТ\n+{self.BONUS_SELECT_BOT_MESSAGE} очков", cache_time=60)
-                    self.db.Add_points(tg_user_id, self.BONUS_SELECT_BOT_MESSAGE, detected_bot['time_send'])
-                else:
-                    self.answer(call_id, f"это НЕ бот\n{self.BONUS_SELECT_NOT_BOT_MESSAGE} очков", cache_time=60)
-                    self.db.Add_points(tg_user_id, self.BONUS_SELECT_NOT_BOT_MESSAGE, detected_bot['time_send'])
-
-            self.is_bot.remove(detected_bot)  
+                self.is_bot.remove(detected_bot)  
 
     def send_online(self, tg_user_id):
         # users_counts = len(self.db.Sql("SELECT * FROM users;"))
@@ -310,8 +307,8 @@ class Bot_logic:
                 self.send(tg_user_id, "> Вы в сессии. /stop , /start")
                 return
 
-        #self.send_online(tg_user_id)
-        self.send(tg_user_id, f'> Пожалуйста подождите...') # f'Please wait at least {self.MIN_WAITING_IN_QUEUE} seconds...')
+        self.send_online(tg_user_id)
+        self.send(tg_user_id, f'> Поиск собеседника, пожалуйста подождите...') # f'Please wait at least {self.MIN_WAITING_IN_QUEUE} seconds...')
 
         self.db.Add_queue(tg_user_id, time_stemp)
 
