@@ -13,7 +13,6 @@ load_dotenv('././.env')
 
 class DB_binding:
     connect = None
-    engine = None
     def Connect(self):
         db_host = os.environ.get('DB_HOST')
         db_name = os.environ.get('DB_NAME')
@@ -27,7 +26,7 @@ class DB_binding:
             password=db_password
         )
         
-        self.engine = create_engine(f'postgresql://{db_user}:{db_password}@{db_host}/{db_name}')
+        # self.engine = create_engine(f'postgresql://{db_user}:{db_password}@{db_host}/{db_name}')
         
         self.connect.autocommit = True
 
