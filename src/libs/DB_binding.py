@@ -1,11 +1,13 @@
 # Attention! 
 # Your local computer need copy file "example.env" and replace to ".env" and write db host, database_name, user, passwordS
 
-from turtle import pd
 import psycopg2
 from psycopg2.extras import DictCursor
+<<<<<<< HEAD
 # from sqlalchemy import create_engine
 # import pandas as pd
+=======
+>>>>>>> parent of 6a877dc (exp)
 
 import os
 from dotenv import load_dotenv
@@ -26,8 +28,11 @@ class DB_binding:
             password=db_password
         )
         
+<<<<<<< HEAD
         # self.engine = create_engine(f'postgresql://{db_user}:{db_password}@{db_host}/{db_name}')
         
+=======
+>>>>>>> parent of 6a877dc (exp)
         self.connect.autocommit = True
 
     def Disconnect(self):

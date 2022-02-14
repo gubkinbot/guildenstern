@@ -3,7 +3,6 @@ from nltk import sent_tokenize
 import re
 import random
 
-
 if __name__ == '__main__':
     from models.simple_bot import MLChitChat
 else:

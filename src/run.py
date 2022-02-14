@@ -2,7 +2,6 @@ from bot_logic import Bot_logic
 from libs.DB_binding import DB_binding
 from libs.message_handler import MessageHandler
 
-
 import os, schedule, time, threading
 
 import telebot
