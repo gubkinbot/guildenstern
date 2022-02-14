@@ -4,8 +4,8 @@
 from turtle import pd
 import psycopg2
 from psycopg2.extras import DictCursor
-from sqlalchemy import create_engine
-import pandas as pd
+# from sqlalchemy import create_engine
+# import pandas as pd
 
 import os
 from dotenv import load_dotenv
