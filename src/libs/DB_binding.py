@@ -53,6 +53,9 @@ class DB_binding:
             return res
     
     # Gets
+    def Get_old_messages(self, user_id, session_id):
+        res = self.Sql(f"SELECT * FROM log WHERE user_id = {user_id} AND session_id = {session_id};")
+        return None if res == [] else res
 
     def Get_id_from_tg_user_id(self, tg_user_id):
         res = self.Sql(f"SELECT id FROM users WHERE tg_user_id = {tg_user_id};")
@@ -90,6 +93,7 @@ class DB_binding:
         last_companion = None # self.Sql("") # <>
 
         return last_companion if last_companion else 0
+
 
     def Get_user_id_from_pseudonym(self, pseudonym):
         res = self.Sql(f"SELECT id FROM users WHERE pseudonym = '{pseudonym}';")
