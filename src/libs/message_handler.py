@@ -72,8 +72,10 @@ class MessageHandler:
     
     
 
-    def impudence(self, message, count_message_in_session = 0) -> list:
-        if self.triger_for_show_Anton(message):
+    def impudence(self, message, count_message_in_session) -> list:
+        if ((count_message_in_session > 10 and 
+            self.triger_for_show_Anton(message)) or 
+            self.flag):
             self.flag = False # for /test command
 
             res = []
@@ -88,7 +90,7 @@ class MessageHandler:
             return None
 
     def triger_for_show_Anton(self, message):
-        return random.randint(1, 5) == 1 or self.flag # <>
+        return random.randint(1, 10) == 1 # <>
     
     def fuckoff(self):
         hi = ['слышь', 'так', 'а ну-ка', 'слушай сюда', 'внимание']

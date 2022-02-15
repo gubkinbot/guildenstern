@@ -113,6 +113,10 @@ class DB_binding:
                 new_res[v['user_id']] = 0
             new_res[v['user_id']] += v['delta_points']
         return new_res
+
+    def Get_count_message_in_session(self, session_id):
+        res = self.Sql(f"SELECT session_id, count(id) FROM log WHERE session_id = {session_id} GROUP BY session_id ORDER BY session_id;")
+        return None if res == [] else res[0]['count']
     # Adds
 
     def Add_user(self, tg_user_id, social_credit, pseudonym):

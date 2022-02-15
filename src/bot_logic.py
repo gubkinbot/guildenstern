@@ -96,7 +96,7 @@ class Bot_logic:
             # self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
             self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
 
-            impudence = self.modify_msg.impudence(message)
+            impudence = self.modify_msg.impudence(message, self.db.Get_count_message_in_session(session_id))
             if impudence:
                 
                 msg_for_select = f""
