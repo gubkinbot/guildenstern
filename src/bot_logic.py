@@ -16,7 +16,10 @@ class Bot_logic:
     # MIN_WAITING_IN_QUEUE < it < MAX_WAITING_IN_QUEUE
 
     BONUS_SELECT_BOT_MESSAGE = 10
-    BONUS_SELECT_NOT_BOT_MESSAGE = -10
+    BONUS_SELECT_NOT_BOT_MESSAGE = -5 # all in session
+
+    BONUS_NOT_SELECT_BOT_MESSAGE = -10
+    BONUS_NOT_SELECT_NOT_BOT_MESSAGE = 0
 
     BUYING_REPLACE_NAME = 100
 
@@ -149,7 +152,7 @@ class Bot_logic:
                 self.impudence.remove(impud)
 
             if data[1] == 'is_bot':
-                self.remove_button_bot_from_last_mgs(tg_user_id, 1, message_id, call_id)
+                self.remove_button_bot_from_last_mgs(tg_user_id, tg_user_id_companion,  1, message_id, call_id)
 
         if data[1] == "buying_replace_name":
             added_points = self.db.Get_all_users_points_from_interval(0, time_send)
@@ -283,13 +286,13 @@ class Bot_logic:
     # utils
 
     def send_and_bot_button(self, session_id, tg_user_id, tg_user_id_companion, send_message, time_send):
-        self.remove_button_bot_from_last_mgs(tg_user_id)   
+        self.remove_button_bot_from_last_mgs(tg_user_id, tg_user_id_companion)   
         msg = self.send(tg_user_id_companion, send_message, parse_mode='Markdown', reply_markup = self.create_buttons(['🤖'], "is_bot"))
         
         self.is_bot.append({'session_id': session_id, 'tg_user_id': tg_user_id_companion, 'message_id': msg.message_id, 'text': send_message, 'time_send': time_send})
 
 
-    def remove_button_bot_from_last_mgs(self, tg_user_id, grade = 0, message_id = 0, call_id = 0):
+    def remove_button_bot_from_last_mgs(self, tg_user_id, tg_user_id_companion, grade = 0, message_id = 0, call_id = 0):
         for v in self.is_bot[:]:
             if ((grade != 0 and v['message_id'] == message_id) or 
                 (grade == 0 and v['tg_user_id'] == tg_user_id)):
@@ -307,6 +310,14 @@ class Bot_logic:
                     else:
                         self.answer(call_id, f"это НЕ бот\n{self.BONUS_SELECT_NOT_BOT_MESSAGE} очков", cache_time=120)
                         self.db.Add_points(tg_user_id, self.BONUS_SELECT_NOT_BOT_MESSAGE, detected_bot['time_send'])
+                        self.db.Add_points(tg_user_id_companion, self.BONUS_SELECT_NOT_BOT_MESSAGE, detected_bot['time_send'])
+                else:
+                    log_id = self.db.Get_log_id_session_id_and_time_send(detected_bot["session_id"], detected_bot['time_send'])
+
+                    if self.db.Get_is_bot_from_log_id(log_id):
+                        self.db.Add_points(tg_user_id, self.BONUS_NOT_SELECT_BOT_MESSAGE, detected_bot['time_send'])
+                    #else:
+                        #self.db.Add_points(tg_user_id, self.BONUS_NOT_SELECT_NOT_BOT_MESSAGE, detected_bot['time_send'])
 
                 self.is_bot.remove(detected_bot)  
 
@@ -364,8 +375,8 @@ class Bot_logic:
                 self.send(session['tg_user_id_b'], bot_message)
 
                 #
-                self.remove_button_bot_from_last_mgs(session['tg_user_id_a'])
-                self.remove_button_bot_from_last_mgs(session['tg_user_id_b'])
+                self.remove_button_bot_from_last_mgs(session['tg_user_id_a'], session['tg_user_id_b'])
+                self.remove_button_bot_from_last_mgs(session['tg_user_id_b'], session['tg_user_id_a'])
 
                 added_points = self.db.Get_all_users_points_from_interval(session['time_start'], time_stemp)
                 user_id_a = self.db.Get_id_from_tg_user_id(session['tg_user_id_a'])
