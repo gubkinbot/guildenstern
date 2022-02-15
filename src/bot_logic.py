@@ -23,7 +23,7 @@ class Bot_logic:
 
     BUYING_REPLACE_NAME = 100
 
-    send = None # def send(tg_user_id, send_message)
+    bot_send = None # def send(tg_user_id, send_message)
     delete = None # def send(tg_user_id, message_id)
     answer = None
     db = None # DB_binding()
@@ -61,8 +61,12 @@ class Bot_logic:
 
     # handlers
 
-    def handler_commands(self, command_name, tg_user_id):
+    def handler_commands(self, command_name, tg_user_id, message_id):
+        self.delete_wait_clear_cmd(tg_user_id)
+
         self.commands[command_name](tg_user_id)
+
+        self.wait_clear_cmd[tg_user_id] = message_id
 
 
     impudence = [] # [{'session_id': 0, 'message_id': 0, 'arr': []}]
@@ -107,10 +111,13 @@ class Bot_logic:
                     msg_for_select += f"\n{k+1} - " + v
                 msg_for_select += f""
 
+                self.delete_wait_clear_cmd(tg_user_id)
+                self.delete_wait_clear_msg(tg_user_id)
+
                 msg = self.send( tg_user_id_companion, msg_for_select, reply_markup = self.create_buttons(['1','2','3'], "impudence"))
                 self.impudence.append({'session_id': session_id, 'message_id': msg.message_id, 'arr': impudence})
         else:
-            self.send(tg_user_id, "> /info")
+            self.send(tg_user_id, "> /info", clear=True)
             # self.send(tg_user_id,  self.modify_msg.process(message), parse_mode='Markdown')
             # self.send(tg_user_id,  self.modify_msg.fuckoff(), parse_mode='Markdown')
     
@@ -169,10 +176,14 @@ class Bot_logic:
 
                 self.db.Change_pseudonym(user_id, pseudonym)
                 self.delete(tg_user_id, message_id)
-                self.send(tg_user_id, f"> Ваш новый псевдоним:\n- {pseudonym}")
+                self.send(tg_user_id, f"> Ваш новый псевдоним:\n- {pseudonym}", clear=True)
                 #self.cmd_top(tg_user_id)
             else:
                 self.answer(call_id, f"> Недостаточно очков", cache_time=60)
+
+        if data[1] == "/start":
+            self.cmd_start(tg_user_id)
+
     # schedulers
 
     def queue_schedule(self):
@@ -212,7 +223,7 @@ class Bot_logic:
             waiting_time = time_stemp - user_in_queue['time_start']
             if waiting_time > self.MAX_WAITING_IN_QUEUE:
                 tg_user_id = user_in_queue['tg_user_id']
-                self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '> Превышено время ожидания в очереди. /start')
+                self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '> Превышено время ожидания в очереди. /start', clear = True)
 
         for session in self.current_sessions:
             last_message_timestamp = self.db.Get_last_message_timestamp_from_session_id(session['session_id'])
@@ -245,13 +256,14 @@ class Bot_logic:
 
     def cmd_stop(self, tg_user_id):
         time_stemp = int(time.time()*1000)/1000
-        self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '> Поиск остановлен. /start')
+        self.stop_queue(tg_user_id, tg_user_id, time_stemp, "NULL", '> Поиск остановлен. /start', clear = True)
         self.stop_session(tg_user_id, time_stemp, "command_stop", '> Сессия остановлена. /start')
 
     def cmd_info(self, tg_user_id):
-        self.send(tg_user_id,f"Начать - /start\nОстановить - /stop\nТоп - /top\nБольше информации - /info")
-        self.send(tg_user_id,f"Правила: (...)")
-        self.send_online(tg_user_id)
+        msg = f"Начать - /start\nОстановить - /stop\nТоп - /top\nБольше информации - /info\n"
+        msg += f"Правила: (...)\n"
+        msg += self.get_msg_online()
+        self.send(tg_user_id, msg, clear = True)
 
     def cmd_test(self, tg_user_id):
         self.modify_msg.flag = True
@@ -281,12 +293,16 @@ class Bot_logic:
 
         sys_msg += f"\nВаш псевдоним:\n- {pseudonym}\nВаши очки: {points}\n"
 
-        self.send(tg_user_id, sys_msg, reply_markup = self.create_buttons([f'🔄 Новый псевдоним - {self.BUYING_REPLACE_NAME} очков'], "buying_replace_name"))
+        self.send(tg_user_id, sys_msg, reply_markup = self.create_buttons([f'🔄 Новый псевдоним - {self.BUYING_REPLACE_NAME} очков'], "buying_replace_name"), clear=True)
 
     # utils
 
     def send_and_bot_button(self, session_id, tg_user_id, tg_user_id_companion, send_message, time_send):
         self.remove_button_bot_from_last_mgs(tg_user_id, tg_user_id_companion)   
+
+        self.delete_wait_clear_cmd(tg_user_id)
+        self.delete_wait_clear_msg(tg_user_id)
+        
         msg = self.send(tg_user_id_companion, send_message, parse_mode='Markdown', reply_markup = self.create_buttons(['🤖'], "is_bot"))
         
         self.is_bot.append({'session_id': session_id, 'tg_user_id': tg_user_id_companion, 'message_id': msg.message_id, 'text': send_message, 'time_send': time_send})
@@ -321,11 +337,11 @@ class Bot_logic:
 
                 self.is_bot.remove(detected_bot)  
 
-    def send_online(self, tg_user_id):
+    def get_msg_online(self) -> str:
         # users_counts = len(self.db.Sql("SELECT * FROM users;"))
         queue_counts = len(self.current_queue)
         session_counts = len(self.current_sessions)*2
-        self.send(tg_user_id, f'Онлайн пользователи:\nв очереди - {queue_counts}\nв сессиях - {session_counts}\n')
+        return f'Онлайн пользователи:\nв очереди - {queue_counts}\nв сессиях - {session_counts}\n'
 
     def add_to_queue(self, tg_user_id, time_stemp):
         for user_in_queue in self.current_queue:
@@ -335,11 +351,11 @@ class Bot_logic:
         for sessions in self.current_sessions:
             if (sessions['tg_user_id_a'] == tg_user_id or
                 sessions['tg_user_id_b'] == tg_user_id):
-                self.send(tg_user_id, "> Вы в сессии. /stop , /start")
+                self.send(tg_user_id, "> Вы в сессии. /stop , /start", clear=True)
                 return
 
-        self.send_online(tg_user_id)
-        self.send(tg_user_id, f'> Поиск собеседника, пожалуйста подождите...') # f'Please wait at least {self.MIN_WAITING_IN_QUEUE} seconds...')
+        msg = self.get_msg_online()
+        self.send(tg_user_id, f'{msg}\n> Поиск собеседника, пожалуйста подождите...', clear=True) # f'Please wait at least {self.MIN_WAITING_IN_QUEUE} seconds...')
 
         self.db.Add_queue(tg_user_id, time_stemp)
 
@@ -353,15 +369,17 @@ class Bot_logic:
         session_id = self.db.Get_session_id_from_time_start(time_stemp)
         self.current_sessions.append({'session_id': session_id, 'tg_user_id_a': tg_user_id_a, 'tg_user_id_b': tg_user_id_b, 'time_start': time_stemp})
         
+        self.delete_wait_clear_cmd(tg_user_id_a)
+        self.delete_wait_clear_cmd(tg_user_id_b)
         self.stop_queue(tg_user_id_a, tg_user_id_b, time_stemp, session_id, '> Собеседник найден')
 
-    def stop_queue(self, tg_user_id_a, tg_user_id_b, time_stemp, session_id, bot_message):
+    def stop_queue(self, tg_user_id_a, tg_user_id_b, time_stemp, session_id, bot_message, clear = False):
         for user_in_queue in self.current_queue[:]:
             if ((user_in_queue['tg_user_id'] == tg_user_id_a) or 
                 (user_in_queue['tg_user_id'] == tg_user_id_b)):
                 self.db.Stop_queue(user_in_queue['queue_id'], time_stemp, session_id)
                 
-                self.send(user_in_queue['tg_user_id'], bot_message)
+                self.send(user_in_queue['tg_user_id'], bot_message, clear=clear)
 
                 self.current_queue.remove(user_in_queue)
 
@@ -370,9 +388,6 @@ class Bot_logic:
             if (session['tg_user_id_a'] == tg_user_id or
                 session['tg_user_id_b'] == tg_user_id ):
                 self.db.Stop_session(session['session_id'], time_stemp, status)
-                
-                self.send(session['tg_user_id_a'], bot_message)
-                self.send(session['tg_user_id_b'], bot_message)
 
                 #
                 self.remove_button_bot_from_last_mgs(session['tg_user_id_a'], session['tg_user_id_b'])
@@ -385,8 +400,62 @@ class Bot_logic:
                 added_points_a = added_points[user_id_a] if added_points.get(user_id_a) else 0
                 added_points_b = added_points[user_id_b] if added_points.get(user_id_b) else 0
 
-                self.send(session['tg_user_id_a'], f"> Прирост очков за сессию: {added_points_a}")
-                self.send(session['tg_user_id_b'], f"> Прирост очков за сессию: {added_points_b}")
+                msg_a = bot_message + f"\nПрирост очков за сессию: {added_points_a}"
+                msg_b = bot_message + f"\nПрирост очков за сессию: {added_points_b}"
+
+                points = self.db.Get_all_users_points_from_interval(0, time_stemp)
+                msg_a += f"\nВсего очков: {points[user_id_a]}"
+                msg_b += f"\nВсего очков: {points[user_id_b]}"
+
+
+                self.delete_wait_clear_cmd(session['tg_user_id_a'])
+                self.delete_wait_clear_cmd(session['tg_user_id_b'])
+
+                self.delete_wait_clear_msg(session['tg_user_id_a'])
+                self.delete_wait_clear_msg(session['tg_user_id_b'])
                 #
+                
+                
+                #buttons = self.create_buttons(['👥 Начать заново'], "/start")
+                self.send(session['tg_user_id_a'], msg_a)#, reply_markup=buttons)
+                self.send(session['tg_user_id_b'], msg_b)#, reply_markup=buttons)
 
                 self.current_sessions.remove(session)
+
+    # buttons_info = []
+
+    def send(self, tg_user_id, message, parse_mode=None, reply_markup=None, clear=False):
+        self.delete_wait_clear_cmd(tg_user_id)
+        self.delete_wait_clear_msg(tg_user_id)
+
+        msg = self.bot_send(tg_user_id, message, parse_mode=parse_mode, reply_markup=reply_markup)
+        
+        # if reply_markup:
+        #     self.buttons_info.append({})
+
+        if clear:
+            self.wait_clear_msg[tg_user_id] = [msg.message_id, message]
+
+        return msg
+
+
+    wait_clear_cmd = {}
+    wait_clear_msg = {}
+
+    def delete_wait_clear_cmd(self, tg_user_id):
+        old_message_id = self.wait_clear_cmd.get(tg_user_id)
+        if old_message_id:
+            try:
+                self.delete(tg_user_id, old_message_id)
+            except Exception as e:
+                print(f"Error: not found message_id for cmd: \n{e}")
+            self.wait_clear_cmd.pop(tg_user_id)
+
+    def delete_wait_clear_msg(self, tg_user_id):
+        message_id = self.wait_clear_msg.get(tg_user_id)
+        if message_id:
+            try:
+                self.delete(tg_user_id, message_id[0])
+            except Exception as e:
+                print(f"Error: not found message_id for message:\n{message_id[1]}")
+            self.wait_clear_msg.pop(tg_user_id)
