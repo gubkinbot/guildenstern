@@ -153,6 +153,9 @@ class DB_binding:
     def Change_grade(self, log_id, is_bot):
         self.Sql(f"UPDATE log SET grade = {is_bot} WHERE id = {log_id};")
 
+    def Change_pseudonym(self, user_id, pseudonym):
+        self.Sql(f"UPDATE users SET pseudonym = '{pseudonym}' WHERE id = {user_id};")
+
 # Debug
 
 #import time

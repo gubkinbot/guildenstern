@@ -18,6 +18,8 @@ class Bot_logic:
     BONUS_SELECT_BOT_MESSAGE = 10
     BONUS_SELECT_NOT_BOT_MESSAGE = -10
 
+    BUYING_REPLACE_NAME = 100
+
     send = None # def send(tg_user_id, send_message)
     delete = None # def send(tg_user_id, message_id)
     answer = None
@@ -149,6 +151,25 @@ class Bot_logic:
             if data[1] == 'is_bot':
                 self.remove_button_bot_from_last_mgs(tg_user_id, 1, message_id, call_id)
 
+        if data[1] == "buying_replace_name":
+            added_points = self.db.Get_all_users_points_from_interval(0, time_send)
+            user_id = self.db.Get_id_from_tg_user_id(tg_user_id)
+            if added_points[user_id] >= self.BUYING_REPLACE_NAME:
+                self.db.Add_points(tg_user_id, -self.BUYING_REPLACE_NAME, time_send)
+                self.answer(call_id, f"> -{self.BUYING_REPLACE_NAME} очков", cache_time=60)
+                pseudonym = ""
+                while True:
+                    pseudonym = generate_nickname()
+                    finded_users = self.db.Get_user_id_from_pseudonym(pseudonym)
+                    if finded_users == None:
+                        break
+
+                self.db.Change_pseudonym(user_id, pseudonym)
+                self.delete(tg_user_id, message_id)
+                self.send(tg_user_id, f"> Ваш новый псевдоним:\n- {pseudonym}")
+                #self.cmd_top(tg_user_id)
+            else:
+                self.answer(call_id, f"> Недостаточно очков", cache_time=60)
     # schedulers
 
     def queue_schedule(self):
@@ -257,8 +278,7 @@ class Bot_logic:
 
         sys_msg += f"\nВаш псевдоним:\n- {pseudonym}\nВаши очки: {points}\n"
 
-        self.send(tg_user_id, sys_msg)
-        
+        self.send(tg_user_id, sys_msg, reply_markup = self.create_buttons([f'🔄 Новый псевдоним - {self.BUYING_REPLACE_NAME} очков'], "buying_replace_name"))
 
     # utils
 
