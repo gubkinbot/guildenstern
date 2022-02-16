@@ -148,11 +148,15 @@ class MessageHandler:
 
         if mean_length < 5:
             len_score = 2
+        elif mean_length > 25:
+            len_score = 10
         
         int_score = intensity * 2
 
         if intensity < 0.5:
             int_score = 1
+        elif intensity > 2.5:
+            int_score = 5
 
         score = len_score + int_score
 
