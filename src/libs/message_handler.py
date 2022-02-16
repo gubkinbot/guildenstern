@@ -156,7 +156,7 @@ class MessageHandler:
 
         score = len_score + int_score
 
-        return f'MAX L = {max_length_for_a_bot}\nMEAN L = {mean_length}\nV = {intensity}\nBALL = {score}'
+        return f'MAX L = {max_length_for_a_bot}\nMEAN L = {mean_length}\nV = {intensity}\nSCORE = {score}'
 
     # @staticmethod
     def preprocess(self, question: str) -> str:
