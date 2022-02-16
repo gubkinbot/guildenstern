@@ -117,6 +117,10 @@ class DB_binding:
     def Get_count_message_in_session(self, session_id):
         res = self.Sql(f"SELECT session_id, count(id) FROM log WHERE session_id = {session_id} GROUP BY session_id ORDER BY session_id;")
         return None if res == [] else res[0]['count']
+
+
+    def Get_data_fro_analysis(self): 
+        return self.Sql('SELECT * FROM log;')
     # Adds
 
     def Add_user(self, tg_user_id, social_credit, pseudonym):

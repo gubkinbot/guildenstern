@@ -2,6 +2,7 @@ from Levenshtein import distance
 from nltk import sent_tokenize
 import re
 import random
+import pandas as pd
 
 if __name__ == '__main__':
     from models.simple_bot import MLChitChat
@@ -97,6 +98,52 @@ class MessageHandler:
         mr = ['ушлепыш', 'натоптыш', 'мазоль', 'отрыжка', 'макака', 'бот', 'собака', 'тупица']
         go = ['канай отсюда', 'лучше бы ты на салфетке остался', 'убейся', 'заройся', 'отдайся бегемоту', 'завернись в лаваш']
         return random.choice(hi) + ', ' + random.choice(mr) + ', ' + random.choice(go)
+
+    def addeddot(self, message):
+        if message[-1] not in [')', '(', '!', '?', '.', ',']:
+            return message + '.'
+        else:
+            return message
+
+    def dialogue_analysis(self, data, user_id, session_id_in, count_msg):
+        print(count_msg)
+        if (not count_msg) or count_msg < 3:
+            return "<>"
+
+        '''
+        минимально: скорость ответа и средняя и максимальная длина сообщений
+        dataset - данные из лога в формате: id, user_id, session_id, message, time_send, type, grade
+        user_id_1 - user_id пользователя, которому отправили сообщение
+        user_id_2 - user_id пользователя, отправившего сообщение
+        '''
+        
+        # <> db должна быть при инициализации
+        dataset = pd.DataFrame(data, columns=['id', 'user_id', 'session_id', 'message', 'time_send', 'type',	'grade'])
+        
+        # исключение ненужных сессий и сообщений бота
+        dataset = dataset[(dataset.session_id == session_id_in) & (dataset.type == 'original')]
+        # порядковые номера с учетом последовательных сообщений
+        dataset.loc[:,'UID'] = dataset.user_id.diff().apply(lambda x: 0 if x == 0 else 1).cumsum()
+        # добавление точки. это больше для того, чтобы потом передавать модели нормальную историю
+        dataset['message'] = dataset.message.apply(self.addeddot)
+        # кручу-верчу
+        aggdata = dataset.pivot_table(index='UID', values=['message', 'user_id', 'time_send', 'session_id'],
+                    aggfunc={'message': '. '.join, 'user_id': 'mean', 'time_send': 'max', 'session_id': 'count'})
+        # максимальная длина сообщений с учетом 20 процентов сверху. для генерации ответа
+        max_length_for_a_bot = dataset[dataset.user_id == user_id].message.apply(len).max() * 1.2
+        # средняя длина сообщений для оценки содержательности
+        mean_length = dataset[dataset.user_id == user_id].message.apply(len).mean()
+        # подсчет задержки
+        aggdata['delay'] = pd.to_datetime(aggdata['time_send']).diff().dt.total_seconds()
+        # подсчет длины сообщений
+        aggdata['len'] = aggdata.message.apply(len)
+        # подсчет скорости ответа
+        aggdata['intensity'] = aggdata['len'] / aggdata['delay']
+        # исключение сообщений собеседника
+        aggdata = aggdata[aggdata.user_id == user_id]
+        # и все
+        intensity = aggdata['intensity'].mean()
+        return f'MAX L = {max_length_for_a_bot}\nMEAN L = {mean_length}\nV = {intensity}'
 
     # @staticmethod
     def preprocess(self, question: str) -> str:

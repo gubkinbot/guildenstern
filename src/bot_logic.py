@@ -97,9 +97,11 @@ class Bot_logic:
             
         if session_id:
             send_message = self.modify_msg.preprocess(message)
-
             self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, send_message, time_send)
-
+            
+            user_id = self.db.Get_id_from_tg_user_id(tg_user_id)
+            debug_msg = self.modify_msg.dialogue_analysis(self.db.Get_data_fro_analysis(), user_id, session_id, self.db.Get_count_message_in_session(session_id))
+            self.send(tg_user_id, debug_msg, clear=True)
             # self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
             self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
 
@@ -316,8 +318,10 @@ class Bot_logic:
                 
                 self.edit(chat_id = tg_user_id, message_id = detected_bot['message_id'], text = detected_bot['text'])
                 
+                log_id = self.db.Get_log_id_session_id_and_time_send(detected_bot["session_id"], detected_bot['time_send'])
+
                 if grade != 0:
-                    log_id = self.db.Get_log_id_session_id_and_time_send(detected_bot["session_id"], detected_bot['time_send'])
+                    
                     self.db.Change_grade(log_id, grade)
 
                     if self.db.Get_is_bot_from_log_id(log_id):
@@ -328,9 +332,7 @@ class Bot_logic:
                         self.db.Add_points(tg_user_id, self.BONUS_SELECT_NOT_BOT_MESSAGE, detected_bot['time_send'])
                         self.db.Add_points(tg_user_id_companion, self.BONUS_SELECT_NOT_BOT_MESSAGE, detected_bot['time_send'])
                 else:
-                    log_id = self.db.Get_log_id_session_id_and_time_send(detected_bot["session_id"], detected_bot['time_send'])
-
-                    if self.db.Get_is_bot_from_log_id(log_id):
+                    if log_id and self.db.Get_is_bot_from_log_id(log_id):
                         self.db.Add_points(tg_user_id, self.BONUS_NOT_SELECT_BOT_MESSAGE, detected_bot['time_send'])
                     #else:
                         #self.db.Add_points(tg_user_id, self.BONUS_NOT_SELECT_NOT_BOT_MESSAGE, detected_bot['time_send'])
