@@ -357,7 +357,7 @@ class Bot_logic:
                 return
 
         msg = self.get_msg_online()
-        self.send(tg_user_id, f'{msg}\n> Поиск собеседника, пожалуйста подождите...', clear=True) # f'Please wait at least {self.MIN_WAITING_IN_QUEUE} seconds...')
+        self.send(tg_user_id, f'{msg}\n> Поиск собеседника. Пожалуйста, подождите...', clear=True) # f'Please wait at least {self.MIN_WAITING_IN_QUEUE} seconds...')
 
         self.db.Add_queue(tg_user_id, time_stemp)
 
@@ -373,7 +373,7 @@ class Bot_logic:
         
         self.delete_wait_clear_cmd(tg_user_id_a)
         self.delete_wait_clear_cmd(tg_user_id_b)
-        self.stop_queue(tg_user_id_a, tg_user_id_b, time_stemp, session_id, '> Собеседник найден')
+        self.stop_queue(tg_user_id_a, tg_user_id_b, time_stemp, session_id, '> Собеседник найден!')
 
     def stop_queue(self, tg_user_id_a, tg_user_id_b, time_stemp, session_id, bot_message, clear = False):
         for user_in_queue in self.current_queue[:]:
