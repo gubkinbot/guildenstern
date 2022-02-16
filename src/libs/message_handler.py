@@ -143,7 +143,20 @@ class MessageHandler:
         aggdata = aggdata[aggdata.user_id == user_id]
         # и все
         intensity = aggdata['intensity'].mean()
-        return f'MAX L = {max_length_for_a_bot}\nMEAN L = {mean_length}\nV = {intensity}'
+
+        len_score = mean_length / 2.5
+
+        if mean_length < 5:
+            len_score = 2
+        
+        int_score = intensity * 2
+
+        if intensity < 0.5:
+            int_score = 1
+
+        score = len_score + int_score
+
+        return f'MAX L = {max_length_for_a_bot}\nMEAN L = {mean_length}\nV = {intensity}\nBALL = {score}'
 
     # @staticmethod
     def preprocess(self, question: str) -> str:
