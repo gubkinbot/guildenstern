@@ -129,7 +129,10 @@ class MessageHandler:
         # кручу-верчу
         aggdata = dataset.pivot_table(index='UID', values=['message', 'user_id', 'time_send', 'session_id'],
                     aggfunc={'message': ' '.join, 'user_id': 'mean', 'time_send': 'max', 'session_id': 'count'})
-        history = '<eom>'.join(list(aggdata.tail(5).message)) + ' ' + message
+        if aggdata.tail(1).user_id.values[0] == user_id:
+            history = '<eom>'.join(list(aggdata.tail(5).message)) + ' ' + message
+        else:
+            history = '<eom>'.join(list(aggdata.tail(5).message)) + '<eom>' + message
         # максимальная длина сообщений с учетом 20 процентов сверху. для генерации ответа
         max_length_for_a_bot = dataset[dataset.user_id == user_id].message.apply(len).max() * 1.2
         # средняя длина сообщений для оценки содержательности
