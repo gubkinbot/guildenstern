@@ -100,7 +100,7 @@ class Bot_logic:
             self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, send_message, time_send)
             
             user_id = self.db.Get_id_from_tg_user_id(tg_user_id)
-            debug_msg = self.modify_msg.dialogue_analysis(self.db.Get_data_fro_analysis(), user_id, session_id, self.db.Get_count_message_in_session(session_id))
+            debug_msg = self.modify_msg.dialogue_analysis(self.db.Get_data_fro_analysis(), user_id, session_id, self.db.Get_count_message_in_session(session_id), send_message)
             self.send(tg_user_id, debug_msg, clear=True)
             # self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
             self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
