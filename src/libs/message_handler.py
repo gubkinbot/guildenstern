@@ -142,7 +142,7 @@ class MessageHandler:
         # исключение сообщений собеседника
         aggdata = aggdata[aggdata.user_id == user_id]
         # и все
-        intensity = aggdata['intensity'].mean()
+        intensity = aggdata['intensity'].median()
 
         len_score = mean_length / 2.5
 
