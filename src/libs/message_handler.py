@@ -128,7 +128,8 @@ class MessageHandler:
         dataset['message'] = dataset.message.apply(self.addeddot)
         # кручу-верчу
         aggdata = dataset.pivot_table(index='UID', values=['message', 'user_id', 'time_send', 'session_id'],
-                    aggfunc={'message': '. '.join, 'user_id': 'mean', 'time_send': 'max', 'session_id': 'count'})
+                    aggfunc={'message': ' '.join, 'user_id': 'mean', 'time_send': 'max', 'session_id': 'count'})
+        history = '<eom>'.join(list(aggdata.tail(5).message))
         # максимальная длина сообщений с учетом 20 процентов сверху. для генерации ответа
         max_length_for_a_bot = dataset[dataset.user_id == user_id].message.apply(len).max() * 1.2
         # средняя длина сообщений для оценки содержательности
@@ -160,7 +161,7 @@ class MessageHandler:
 
         score = len_score + int_score
 
-        return f'MAX L = {max_length_for_a_bot}\nMEAN L = {mean_length}\nV = {intensity}\nSCORE = {score}'
+        return f'MAX L = {max_length_for_a_bot}\nMEAN L = {mean_length}\nV = {intensity}\nSCORE = {score}.\n\n{history}'
 
     # @staticmethod
     def preprocess(self, question: str) -> str:
