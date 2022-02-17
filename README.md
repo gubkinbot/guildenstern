@@ -17,3 +17,9 @@
 
   ![""](/.resource/db_scheme.png "Gachi")
 </details>
+
+<details> 
+  <summary>[SPOILER] Bot scheme. version 17.02.22  </summary>
+
+  ![""](/.resource/Guildenstern.png "Chris")
+</details>
