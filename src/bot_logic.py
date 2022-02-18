@@ -96,13 +96,14 @@ class Bot_logic:
                 break
             
         if session_id:
-            send_message = self.modify_msg.preprocess(message)
-            answer = self.modify_msg.answering_machine(send_message)
+            answer = self.modify_msg.answering_machine(message)
             if answer != 0:
                 self.db.Add_log(tg_user_id, session_id, message, time_send, "from answering machine", 0)
                 self.send_and_bot_button(session_id, tg_user_id_companion, tg_user_id, answer, time_send)
-                self.send(tg_user_id_companion, '> Он такой: ' +  send_message + '\n\n> А я такой: ' + answer, clear=True)
+                self.send(tg_user_id_companion, '> Он такой: ' +  message + '\n\n> А я такой: ' + answer, clear=True)
             else:
+                
+                send_message = self.modify_msg.preprocess(message)
                 self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, send_message, time_send)
             
                 user_id = self.db.Get_id_from_tg_user_id(tg_user_id)
