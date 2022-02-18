@@ -97,28 +97,32 @@ class Bot_logic:
             
         if session_id:
             send_message = self.modify_msg.preprocess(message)
-            send_message = send_message + str(self.modify_msg.answering_machine(send_message))
-            self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, send_message, time_send)
+            answer = self.modify_msg.answering_machine(send_message)
+            if answer != 0:
+                self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
+                self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, answer, time_send)
+            else:
+                self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, send_message, time_send)
             
-            user_id = self.db.Get_id_from_tg_user_id(tg_user_id)
-            debug_msg = self.modify_msg.dialogue_analysis(self.db.Get_data_fro_analysis(), user_id, session_id, self.db.Get_count_message_in_session(session_id), send_message)
-            self.send(tg_user_id, debug_msg, clear=True)
-            # self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
-            self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
+                user_id = self.db.Get_id_from_tg_user_id(tg_user_id)
+                debug_msg = self.modify_msg.dialogue_analysis(self.db.Get_data_fro_analysis(), user_id, session_id, self.db.Get_count_message_in_session(session_id), send_message)
+                self.send(tg_user_id, debug_msg, clear=True)
+                # self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
+                self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
 
-            impudence = self.modify_msg.impudence(message, self.db.Get_count_message_in_session(session_id))
-            if impudence:
+                impudence = self.modify_msg.impudence(message, self.db.Get_count_message_in_session(session_id))
+                if impudence:
                 
-                msg_for_select = f""
-                for k, v in enumerate(impudence):
-                    msg_for_select += f"\n{k+1} - " + v
-                msg_for_select += f""
+                    msg_for_select = f""
+                    for k, v in enumerate(impudence):
+                        msg_for_select += f"\n{k+1} - " + v
+                    msg_for_select += f""
 
-                self.delete_wait_clear_cmd(tg_user_id)
-                self.delete_wait_clear_msg(tg_user_id)
+                    self.delete_wait_clear_cmd(tg_user_id)
+                    self.delete_wait_clear_msg(tg_user_id)
 
-                msg = self.send( tg_user_id_companion, msg_for_select, reply_markup = self.create_buttons(['1','2','3'], "impudence"))
-                self.impudence.append({'session_id': session_id, 'message_id': msg.message_id, 'arr': impudence})
+                    msg = self.send( tg_user_id_companion, msg_for_select, reply_markup = self.create_buttons(['1','2','3'], "impudence"))
+                    self.impudence.append({'session_id': session_id, 'message_id': msg.message_id, 'arr': impudence})
         else:
             self.send(tg_user_id, "> /info", clear=True)
             # self.send(tg_user_id,  self.modify_msg.process(message), parse_mode='Markdown')
