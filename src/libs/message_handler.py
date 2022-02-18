@@ -23,7 +23,7 @@ class MessageHandler:
     def normalization(text):
         return None
 
-    def answering_machine(question):
+    def answering_machine(self, question):
 
         topics = {
             'как дела': 1, 'как делишки': 1,
