@@ -1,0 +1,2 @@
+class session():
+    pass
