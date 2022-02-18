@@ -122,7 +122,7 @@ class MessageHandler:
             return None
 
     def triger_for_show_Anton(self, message):
-        return random.randint(1, 10) == 1 # <>
+        return random.randint(1, 100) == 1 # <>
     
     def fuckoff(self):
         hi = ['слышь', 'так', 'а ну-ка', 'слушай сюда', 'внимание']
