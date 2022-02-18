@@ -101,7 +101,7 @@ class Bot_logic:
             if answer != 0:
                 self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
                 self.send_and_bot_button(session_id, tg_user_id_companion, tg_user_id, answer, time_send)
-                self.send(tg_user_id_companion, 'Он такой: ' +  send_message + '\n\nА я такой: ' + answer, clear=True)
+                self.send(tg_user_id_companion, '> Он такой: ' +  send_message + '\n\n> А я такой: ' + answer, clear=True)
             else:
                 self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, send_message, time_send)
             
