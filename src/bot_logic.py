@@ -97,6 +97,7 @@ class Bot_logic:
             
         if session_id:
             send_message = self.modify_msg.preprocess(message)
+            send_message = send_message + str(self.modify_msg.answering_machine(send_message))
             self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, send_message, time_send)
             
             user_id = self.db.Get_id_from_tg_user_id(tg_user_id)
