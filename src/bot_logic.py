@@ -100,7 +100,8 @@ class Bot_logic:
             answer = self.modify_msg.answering_machine(send_message)
             if answer != 0:
                 self.db.Add_log(tg_user_id, session_id, message, time_send, "original", 0)
-                self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, answer, time_send)
+                self.send_and_bot_button(session_id, tg_user_id_companion, tg_user_id, answer, time_send)
+                self.send(tg_user_id, 'я тут того...', clear=True)
             else:
                 self.send_and_bot_button(session_id, tg_user_id, tg_user_id_companion, send_message, time_send)
             
