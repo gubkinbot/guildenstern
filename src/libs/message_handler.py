@@ -6,13 +6,16 @@ import pandas as pd
 
 if __name__ == "__main__":
     from models.simple_bot import MLChitChat
+    from models.toxicity_checker import ToxicityChecker
 else:
     from .models.simple_bot import MLChitChat
+    from .models.toxicity_checker import ToxicityChecker
 
 
 class MessageHandler:
     def __init__(self) -> None:
         self.dialog_model = MLChitChat()
+        self.toxicity_model = ToxicityChecker()
 
     # обработка сообщений. решение, что, кому и как отправлять
     def analysis(message):
@@ -181,7 +184,11 @@ class MessageHandler:
 
     flag = False  # for /test command
 
-    def impudence(self, message: str, count_message_in_session: int, max_length=54) -> list:
+    def impudence(
+            self,
+            message: str,
+            count_message_in_session: int,
+            max_length=54) -> tuple:
         if (
             count_message_in_session > 10 and self.triger_for_show_Anton(message)
         ) or self.flag:
@@ -194,12 +201,20 @@ class MessageHandler:
             for row in model_msg:
                 res.append(self.preprocess(str(row[0])))
 
-            return res
+            return True, res
         else:
-            return None
+            return False, message
 
     def triger_for_show_Anton(self, message):
         return random.randint(1, 100) == 1  # <>
+
+    def fucking_check(self, message: str):
+        fuck_score = self.toxicity_model(message)
+        print(f"Message '{message}' toxicity score: {fuck_score}")
+        if fuck_score > 0.85:
+            return True, self.fuckoff()
+        else:
+            return False, message
 
     def fuckoff(self):
         hi = ["слышь", "так", "а ну-ка", "слушай сюда", "внимание"]
