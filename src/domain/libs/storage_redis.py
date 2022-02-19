@@ -1,0 +1,2 @@
+class RedisStorage:
+    pass
