@@ -150,7 +150,7 @@ class Bot_logic:
                     self.db.Get_count_message_in_session(session_id),
                     send_message,
                 )
-                self.send(tg_user_id, debug_msg, clear=True)
+                # self.send(tg_user_id, debug_msg, clear=True)
                 # self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
                 self.db.Add_log(
                     tg_user_id, session_id, message, time_send, "original", 0
