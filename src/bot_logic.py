@@ -129,7 +129,7 @@ class Bot_logic:
                     clear=False,
                 )
                 self.db.Add_log(
-                    tg_user_id, tg_user_id_companion, answer, time_send, "from_bot", 0
+                    tg_user_id_companion, session_id, answer, time_send, "from_bot", 0
                 )
             else:
 
