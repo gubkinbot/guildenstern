@@ -38,7 +38,15 @@ class Bot_logic:
         []
     )  # [{'session_id':0 ,'tg_user_id_a': 0, 'tg_user_id_b': 0, 'time_start': 0}, ...]
 
-    def init(self):
+    impudence = []  # [{'session_id': 0, 'message_id': 0, 'arr': []}]
+    is_bot = (
+        []
+    )  # [{'session_id': 0, 'tg_user_id': 0, 'message_id': 0, 'text': "", 'time_send': 0}]
+
+    def __init__(self, db, handler) -> None:
+        self.modify_msg = handler
+        self.db = db
+
         current_queue = self.db.Get_current_queue()
         for v in current_queue:
             tg_user_id = self.db.Get_tg_user_id_from_id(v["user_id"])
@@ -86,11 +94,6 @@ class Bot_logic:
 
         self.wait_clear_cmd[tg_user_id] = message_id
 
-    impudence = []  # [{'session_id': 0, 'message_id': 0, 'arr': []}]
-    is_bot = (
-        []
-    )  # [{'session_id': 0, 'tg_user_id': 0, 'message_id': 0, 'text': "", 'time_send': 0}]
-
     def handler_message(self, tg_user_id, message):
 
         # if message.lower()[:6] == '/start':
@@ -103,6 +106,7 @@ class Bot_logic:
         time_send = int(time.time() * 1000) / 1000
         session_id = None
         tg_user_id_companion = None
+        intrude = False
 
         for session in self.current_sessions:
             if session["tg_user_id_a"] == tg_user_id:
@@ -132,36 +136,58 @@ class Bot_logic:
                     tg_user_id_companion, session_id, answer, time_send, "from_bot", 0
                 )
             else:
-
                 send_message = self.modify_msg.preprocess(message)
                 self.send_and_bot_button(
-                    session_id,
-                    tg_user_id,
-                    tg_user_id_companion,
-                    send_message,
-                    time_send,
-                )
-
+                        session_id,
+                        tg_user_id,
+                        tg_user_id_companion,
+                        send_message,
+                        time_send,
+                    )
                 user_id = self.db.Get_id_from_tg_user_id(tg_user_id)
-                send_message, max_length, debug_msg = self.modify_msg.dialogue_analysis(
-                    self.db.Get_data_fro_analysis(),
-                    user_id,
-                    session_id,
-                    self.db.Get_count_message_in_session(session_id),
-                    send_message,
-                )
-                # self.send(tg_user_id, debug_msg, clear=True)
-                # self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
-                self.db.Add_log(
-                    tg_user_id, session_id, message, time_send, "original", 0
-                )
+                
+                print(send_message)
+                toxic, send_message = self.modify_msg.fucking_check(send_message)
+                print(send_message)
+                if toxic:
+                    self.send_and_bot_button(
+                        session_id,
+                        tg_user_id_companion,
+                        tg_user_id,
+                        send_message,
+                        time_send,
+                    )
 
-                impudence = self.modify_msg.impudence(
-                    send_message,
-                    self.db.Get_count_message_in_session(session_id),
-                    max_length
-                )
-                if impudence:
+                    msg_for_user = ">Ваш собеседник слишком, груб, и Антон решил ответить за вас:\n>"
+                    msg_for_user += send_message
+
+                    msg = self.send(
+                        tg_user_id_companion,
+                        msg_for_user,
+                    )
+                    self.db.Add_log(
+                        tg_user_id, session_id, message, time_send, "original", 0
+                    )
+                else:
+                    send_message, max_length, debug_msg = self.modify_msg.dialogue_analysis(
+                        self.db.Get_data_fro_analysis(),
+                        user_id,
+                        session_id,
+                        self.db.Get_count_message_in_session(session_id),
+                        send_message,
+                    )
+                    # self.send(tg_user_id, debug_msg, clear=True)
+                    # self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
+                    self.db.Add_log(
+                        tg_user_id, session_id, message, time_send, "original", 0
+                    )
+                    print(send_message)
+                    intrude, impudence = self.modify_msg.impudence(
+                        send_message,
+                        self.db.Get_count_message_in_session(session_id),
+                        max_length
+                    )
+                if intrude:
 
                     msg_for_select = ""
                     for k, v in enumerate(impudence):

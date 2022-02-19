@@ -10,20 +10,16 @@ from telebot import types
 from dotenv import load_dotenv
 load_dotenv('./.env')
 token = os.environ.get('TOKEN')
-bot=telebot.TeleBot(token)
+bot = telebot.TeleBot(token)
 
 db = DB_binding()
 handler = MessageHandler()
-logic = Bot_logic()
+logic = Bot_logic(db=db, handler=handler)
 
-logic.db = db
-logic.modify_msg = handler
 logic.bot_send = bot.send_message
 logic.delete = bot.delete_message
 logic.edit = bot.edit_message_text
 logic.answer = bot.answer_callback_query
-
-logic.init()
 
 # handlers
 
