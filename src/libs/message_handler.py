@@ -257,7 +257,8 @@ class MessageHandler:
 
         # исключение ненужных сессий и сообщений бота
         dataset = dataset[
-            (dataset.session_id == session_id_in) & (dataset.type == "original")
+            # (dataset.session_id == session_id_in) & (dataset.type == "original")
+            dataset.session_id == session_id_in
         ]
         # порядковые номера с учетом последовательных сообщений
         dataset.loc[:, "UID"] = (
