@@ -1,9 +1,0 @@
-do_sample: True
-num_beams: 3
-num_return_sequences: 3
-repetition_penalty: 2.5
-top_k: 500
-temperature: 1.11
-max_length: 54
-output_scores: True
-return_dict_in_generate: True

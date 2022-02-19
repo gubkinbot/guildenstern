@@ -1,4 +1,5 @@
-import os, dotenv
+import os
+import dotenv
 from aiogram import Bot, Dispatcher, executor, types
 import logging
 
