@@ -118,7 +118,7 @@ class Bot_logic:
             answer = self.modify_msg.answering_machine(message)
             if answer != 0:
                 self.db.Add_log(
-                    tg_user_id, session_id, message, time_send, "from_bot", 0
+                    tg_user_id, session_id, message, time_send, "original", 0
                 )
                 self.send_and_bot_button(
                     session_id, tg_user_id_companion, tg_user_id, answer, time_send
@@ -127,6 +127,9 @@ class Bot_logic:
                     tg_user_id_companion,
                     "> Он такой: " + message + "\n\n> А я такой: " + answer,
                     clear=False,
+                )
+                self.db.Add_log(
+                    tg_user_id, tg_user_id_companion, answer, time_send, "from_bot", 0
                 )
             else:
 
