@@ -1,6 +1,6 @@
 # Guildenstern
 
-![""](/.resource/Guildenstern.png "Chris")
+![""](/.resource/logo.jpeg "Chris")
 
 Анонимно-игровой чат с элементами осмысленности и NLP
 
