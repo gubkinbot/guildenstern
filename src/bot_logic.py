@@ -8,9 +8,9 @@ from libs.models.nickname_generator import generate_nickname
 class Bot_logic:
 
     MIN_WAITING_IN_QUEUE = 3
-    MAX_WAITING_IN_QUEUE = 180
+    MAX_WAITING_IN_QUEUE = 1800
 
-    MAX_WAITING_IN_SESSIONS = 30
+    MAX_WAITING_IN_SESSIONS = 600
 
     COMPANION_TIME_OUT = 30
     # Предел времи ожидания в очереди, для прошлого собеседника
@@ -23,7 +23,7 @@ class Bot_logic:
     BONUS_NOT_SELECT_BOT_MESSAGE = -10
     BONUS_NOT_SELECT_NOT_BOT_MESSAGE = 0
 
-    BUYING_REPLACE_NAME = 100
+    BUYING_REPLACE_NAME = 50
 
     bot_send = None  # def send(tg_user_id, send_message)
     delete = None  # def send(tg_user_id, message_id)
