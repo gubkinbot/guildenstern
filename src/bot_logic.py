@@ -406,7 +406,7 @@ class Bot_logic:
 
     def cmd_info(self, tg_user_id):
         msg = f"Начать - /start\nОстановить - /stop\nТоп - /top\nБольше информации - /info\n\n"
-        msg += f"Правила: (...)\n\n"
+        msg += f"Основное правило: общаться осмысленно, без агрессии. Если вам кажется, что сообщение отправил не собеседник, а Анотон - нажимайте кнопку с роботом под сообщением.\n\n"
         msg += self.get_msg_online()
         self.send(tg_user_id, msg, clear=True)
 
