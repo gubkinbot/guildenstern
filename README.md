@@ -1,5 +1,7 @@
 # Guildenstern
 
+![""](/.resource/Guildenstern.png "Chris")
+
 Анонимно-игровой чат с элементами осмысленности и NLP
 
 https://t.me/guildensternbot
