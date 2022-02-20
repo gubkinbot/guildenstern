@@ -23,7 +23,7 @@ class Bot_logic:
     BONUS_NOT_SELECT_BOT_MESSAGE = -10
     BONUS_NOT_SELECT_NOT_BOT_MESSAGE = 0
 
-    BUYING_REPLACE_NAME = 50
+    BUYING_REPLACE_NAME = 20
 
     bot_send = None  # def send(tg_user_id, send_message)
     delete = None  # def send(tg_user_id, message_id)
