@@ -206,7 +206,7 @@ class MessageHandler:
             return False, message
 
     def triger_for_show_Anton(self, message):
-        return random.randint(1, 100) == 1  # <>
+        return random.randint(1, 5) == 1  # <>
 
     def fucking_check(self, message: str):
         fuck_score = self.toxicity_model(message)
