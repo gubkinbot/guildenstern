@@ -103,7 +103,7 @@ class DB_binding:
 
     def Get_is_bot_from_log_id(self, log_id):
         res = self.Sql(f"SELECT type FROM log WHERE id = {log_id};")
-        return None if res == [] else res[0]['type']=='from_bot'
+        return None if res == [] else res[0]['type']=='from_bot' or res[0]['type']=='from_bot_toxic' or res[0]['type']=='from_bot_stupid'
 
     def Get_all_users_points_from_interval(self, time_start, time_stop) -> dict:
         res = self.Sql(f"SELECT user_id, delta_points FROM points WHERE to_timestamp({time_start}) < time_event AND time_event < to_timestamp({time_stop});")

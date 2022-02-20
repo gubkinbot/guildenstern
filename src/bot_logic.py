@@ -1,4 +1,5 @@
 import schedule, time, random
+from threading import Timer
 from libs.models.nickname_generator import generate_nickname
 
 # from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -88,25 +89,16 @@ class Bot_logic:
     # handlers
 
     def handler_commands(self, command_name, tg_user_id, message_id):
-        self.delete_wait_clear_cmd(tg_user_id)
-
+        self.delete(tg_user_id, message_id)
         self.commands[command_name](tg_user_id)
 
-        self.wait_clear_cmd[tg_user_id] = message_id
-
     def handler_message(self, tg_user_id, message):
-
-        # if message.lower()[:6] == '/start':
-        #     self.commands['start'](tg_user_id)
-        #     return
-        # if message.lower()[:5] == '/stop':
-        #     self.commands['stop'](tg_user_id)
-        #     return
 
         time_send = int(time.time() * 1000) / 1000
         session_id = None
         tg_user_id_companion = None
         intrude = False
+        user_id = self.db.Get_id_from_tg_user_id(tg_user_id)
 
         for session in self.current_sessions:
             if session["tg_user_id_a"] == tg_user_id:
@@ -119,96 +111,107 @@ class Bot_logic:
                 break
 
         if session_id:
-            answer = self.modify_msg.answering_machine(message)
-            if answer != 0:
-                self.db.Add_log(
-                    tg_user_id, session_id, message, time_send, "original", 0
-                )
-                self.send_and_bot_button(
-                    session_id, tg_user_id_companion, tg_user_id, answer, time_send
-                )
+            send_message = self.modify_msg.preprocess(message)
+            
+            # Получаем сообщение от собеседника, каким бы оно ни было
+
+            self.send_and_bot_button(
+                session_id,
+                tg_user_id,
+                tg_user_id_companion,
+                send_message,
+                time_send,
+            )
+
+            self.db.Add_log(
+                tg_user_id,
+                session_id,
+                message,
+                time_send,
+                "original",
+                0
+            )
+            
+            # Проверяем
+
+            toxic, toxic_answer = self.modify_msg.fucking_check(send_message)
+            machine_answer = self.modify_msg.answering_machine(message)
+
+            model_send_message, max_length, debug_msg = self.modify_msg.dialogue_analysis(
+                self.db.Get_data_fro_analysis(),
+                user_id,
+                session_id,
+                self.db.Get_count_message_in_session(session_id),
+                send_message,
+            )
+
+            intrude, impudence = self.modify_msg.impudence(
+                model_send_message,
+                self.db.Get_count_message_in_session(session_id),
+                max_length
+            )
+
+            # Решаем что делать
+
+            if toxic:
+                Timer(
+                    3.0,
+                    lambda: self.delay_send(
+                        session_id,
+                        tg_user_id_companion,
+                        tg_user_id,
+                        toxic_answer,
+                        "from_bot_toxic"
+                    )
+                ).start()
+
                 self.send(
                     tg_user_id_companion,
-                    "> Он такой: " + message + "\n\n> А я такой: " + answer,
-                    clear=False,
+                    f"> Токсик детектед. Бот ответил за вас:\n> {toxic_answer}"
                 )
-                self.db.Add_log(
-                    tg_user_id_companion, session_id, answer, time_send, "from_bot", 0
-                )
-            else:
-                send_message = self.modify_msg.preprocess(message)
-                self.send_and_bot_button(
-                        session_id,
-                        tg_user_id,
-                        tg_user_id_companion,
-                        send_message,
-                        time_send,
-                    )
-                user_id = self.db.Get_id_from_tg_user_id(tg_user_id)
-                
-                print(send_message)
-                toxic, send_message = self.modify_msg.fucking_check(send_message)
-                print(send_message)
-                if toxic:
-                    self.send_and_bot_button(
+
+                return    
+
+            if machine_answer != 0:
+                Timer(
+                    3.0,
+                    lambda: self.delay_send(
                         session_id,
                         tg_user_id_companion,
                         tg_user_id,
-                        send_message,
-                        time_send,
+                        machine_answer,
+                        "from_bot_stupid"
                     )
+                ).start()
 
-                    msg_for_user = ">Ваш собеседник слишком, груб, и Антон решил ответить за вас:\n>"
-                    msg_for_user += send_message
+                self.send(
+                    tg_user_id_companion,
+                    f"> Бот ответил за вас:\n> {machine_answer}"
+                )
 
-                    msg = self.send(
-                        tg_user_id_companion,
-                        msg_for_user,
-                    )
-                    self.db.Add_log(
-                        tg_user_id, session_id, message, time_send, "original", 0
-                    )
-                else:
-                    send_message, max_length, debug_msg = self.modify_msg.dialogue_analysis(
-                        self.db.Get_data_fro_analysis(),
-                        user_id,
-                        session_id,
-                        self.db.Get_count_message_in_session(session_id),
-                        send_message,
-                    )
-                    # self.send(tg_user_id, debug_msg, clear=True)
-                    # self.send(tg_user_id, self.modify_msg.preprocess(message), parse_mode='Markdown')
-                    self.db.Add_log(
-                        tg_user_id, session_id, message, time_send, "original", 0
-                    )
-                    print(send_message)
-                    intrude, impudence = self.modify_msg.impudence(
-                        send_message,
-                        self.db.Get_count_message_in_session(session_id),
-                        max_length
-                    )
-                if intrude:
+                return
 
-                    msg_for_select = ""
-                    for k, v in enumerate(impudence):
-                        msg_for_select += f"\n{k+1} - " + v
-                    msg_for_select += ""
+            if intrude:
 
-                    self.delete_wait_clear_cmd(tg_user_id)
-                    self.delete_wait_clear_msg(tg_user_id)
+                msg_for_select = ""
+                for k, v in enumerate(impudence):
+                    msg_for_select += f"\n{k+1} - " + v
+                msg_for_select += ""
 
-                    msg = self.send(
-                        tg_user_id_companion,
-                        msg_for_select,
-                        reply_markup=self.create_buttons(["1", "2", "3"], "impudence"),
-                    )
-                    self.impudence.append(
-                        {
-                            "session_id": session_id,
-                            "message_id": msg.message_id,
-                            "arr": impudence,
-                        }
-                    )
+                self.delete_wait_clear_msg(tg_user_id)
+
+                msg = self.send(
+                    tg_user_id_companion,
+                    msg_for_select,
+                    reply_markup=self.create_buttons(["1", "2", "3"], "impudence"),
+                )
+                self.impudence.append(
+                    {
+                        "session_id": session_id,
+                        "message_id": msg.message_id,
+                        "arr": impudence,
+                    }
+                )
         else:
             self.send(tg_user_id, "> /info", clear=True)
             # self.send(tg_user_id,  self.modify_msg.process(message), parse_mode='Markdown')
@@ -241,7 +244,7 @@ class Bot_logic:
 
                 self.delete(tg_user_id, impud["message_id"])
                 impudence_msg = impud["arr"][selected_id]
-                self.send(tg_user_id, f"> Вы отправили:\n> {impudence_msg}")
+                self.send(tg_user_id, f"> Вы ответили:\n> {impudence_msg}")
 
                 self.send_and_bot_button(
                     session_id,
@@ -448,11 +451,11 @@ class Bot_logic:
     # utils
 
     def send_and_bot_button(
-        self, session_id, tg_user_id, tg_user_id_companion, send_message, time_send
+        self, session_id, tg_user_id, tg_user_id_companion, send_message, time_send, remove_last_buttons = True
     ):
-        self.remove_button_bot_from_last_mgs(tg_user_id, tg_user_id_companion)
+        if remove_last_buttons:
+            self.remove_button_bot_from_last_mgs(tg_user_id, tg_user_id_companion)
 
-        self.delete_wait_clear_cmd(tg_user_id)
         self.delete_wait_clear_msg(tg_user_id)
 
         msg = self.send(
@@ -586,8 +589,6 @@ class Bot_logic:
             }
         )
 
-        self.delete_wait_clear_cmd(tg_user_id_a)
-        self.delete_wait_clear_cmd(tg_user_id_b)
         self.stop_queue(
             tg_user_id_a, tg_user_id_b, time_stemp, session_id, "> Собеседник найден!"
         )
@@ -647,9 +648,6 @@ class Bot_logic:
                 msg_a += f"\nВсего очков: {points[user_id_a]}"
                 msg_b += f"\nВсего очков: {points[user_id_b]}"
 
-                self.delete_wait_clear_cmd(session["tg_user_id_a"])
-                self.delete_wait_clear_cmd(session["tg_user_id_b"])
-
                 self.delete_wait_clear_msg(session["tg_user_id_a"])
                 self.delete_wait_clear_msg(session["tg_user_id_b"])
                 #
@@ -665,7 +663,6 @@ class Bot_logic:
     def send(
         self, tg_user_id, message, parse_mode=None, reply_markup=None, clear=False
     ):
-        self.delete_wait_clear_cmd(tg_user_id)
         self.delete_wait_clear_msg(tg_user_id)
 
         msg = self.bot_send(
@@ -680,17 +677,7 @@ class Bot_logic:
 
         return msg
 
-    wait_clear_cmd = {}
     wait_clear_msg = {}
-
-    def delete_wait_clear_cmd(self, tg_user_id):
-        old_message_id = self.wait_clear_cmd.get(tg_user_id)
-        if old_message_id:
-            try:
-                self.delete(tg_user_id, old_message_id)
-            except Exception as e:
-                print(f"Error: not found message_id for cmd: \n{e}")
-            self.wait_clear_cmd.pop(tg_user_id)
 
     def delete_wait_clear_msg(self, tg_user_id):
         message_id = self.wait_clear_msg.get(tg_user_id)
@@ -700,3 +687,19 @@ class Bot_logic:
             except Exception as e:
                 print(f"Error: not found message_id for message:\n{message_id[1]}")
             self.wait_clear_msg.pop(tg_user_id)
+
+    def delay_send(self, session_id, tg_user_id_companion, tg_user_id, answer, creator):
+        time_send = int(time.time() * 1000) / 1000
+
+        self.send_and_bot_button(
+            session_id,
+            tg_user_id_companion,
+            tg_user_id,
+            answer,
+            time_send,
+            remove_last_buttons = False
+        )
+
+        self.db.Add_log(
+            tg_user_id_companion, session_id, answer, time_send, creator, 0
+        )
