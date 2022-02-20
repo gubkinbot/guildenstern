@@ -167,7 +167,7 @@ class Bot_logic:
 
                 self.send(
                     tg_user_id_companion,
-                    f"> Токсик детектед. Бот ответил за вас:\n> {toxic_answer}"
+                    f"> Ваш собеседник агрессивен. Антон ответил за вас:\n> {toxic_answer}"
                 )
 
                 return    
@@ -186,7 +186,7 @@ class Bot_logic:
 
                 self.send(
                     tg_user_id_companion,
-                    f"> Бот ответил за вас:\n> {machine_answer}"
+                    f"> Антон ответил за вас:\n> {machine_answer}"
                 )
 
                 return
