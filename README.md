@@ -5,7 +5,7 @@
 https://t.me/guildensternbot
 
 <details> 
-  <summary>[SPOILER] Bot scheme. version 17.02.22  </summary>
+  <summary>[SPOILER] Общая схема работы бота  </summary>
 
   ![""](/.resource/Guildenstern.png "Chris")
 </details>
