@@ -129,4 +129,8 @@ dmypy.json
 .pyre/
 
 # Jupyter notebooks
-*.ipynb
+#*.ipynb
+
+# data
+#.resource/model_data
+data/

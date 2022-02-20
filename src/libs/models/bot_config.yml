@@ -1,8 +1,11 @@
-do_sample: True
-num_beams: 3
+do_sample: False
+num_beams: 9
+num_beam_groups: 3
 num_return_sequences: 3
 repetition_penalty: 2.5
+diversity_penalty: 2.5
 top_k: 500
+top_p: 0.9
 temperature: 1.11
 max_length: 54
 output_scores: True

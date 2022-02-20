@@ -26,5 +26,5 @@ class MLChitChat:
         ans_li = []
         hypotheses = zip(hypotheses.sequences, hypotheses.sequences_scores)
         for tens, score in hypotheses:
-            ans_li.append((self.tokenizer.decode(tens, skip_special_tokens=True), score.item()))
+            ans_li.append((self.tokenizer.decode(tens, skip_special_tokens=True), torch.exp(score).item()))
         return ans_li
