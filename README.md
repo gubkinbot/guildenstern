@@ -1,6 +1,6 @@
 # Guildenstern
 
-![""](/.resource/logo.jpg "logo")
+<img src="/.resource/logo.jpg" width="300">
 
 Анонимно-игровой чат с элементами осмысленности и NLP
 
