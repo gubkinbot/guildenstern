@@ -1,25 +1,13 @@
 # Guildenstern
 
-<details> 
-  <summary>[SPOILER] Kekw scheme. version 06.02.22  </summary>
+[<img src="/.resource/logo.jpg" width="300">](https://t.me/guildensternbot)
 
-  ![""](/.resource/kekw_scheme.png "Kekw")
-</details>
+Анонимно-игровой чат с элементами осмысленности и NLP
 
-<details> 
-  <summary>[SPOILER] Gachi scheme. version 08.02.22  </summary>
-
-  ![""](/.resource/gachi_scheme.png "Gachi")
-</details>
+https://t.me/guildensternbot
 
 <details> 
-  <summary>[SPOILER] DB scheme. version 13.02.22  </summary>
-
-  ![""](/.resource/db_scheme.png "Gachi")
-</details>
-
-<details> 
-  <summary>[SPOILER] Bot scheme. version 17.02.22  </summary>
-
-  ![""](/.resource/Guildenstern.png "Chris")
+  <summary>[SPOILER] Общая схема работы бота  </summary>
+  
+  ![""](/.resource/Guildenstern.png "scheme")
 </details>
